@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(14);
 
 select ok(to_regprocedure('public.read_operational_report(timestamptz,timestamptz,currency_code)') is not null, 'operational report function exists');

@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(55);
 
 select ok(to_regclass('public.ingestion_batches') is not null, 'ingestion batches exist');

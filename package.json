@@ -33,6 +33,7 @@
     "security:artifacts": "node scripts/security/generate-artifacts.mjs",
     "cleanup:check": "node scripts/final-cleanup.mjs",
     "staff:local": "node scripts/create-local-staff.mjs",
+    "staff:bootstrap-managed": "node scripts/bootstrap-managed-owner.mjs",
     "env:check": "node --disable-warning=ExperimentalWarning --experimental-strip-types scripts/check-env.mjs",
     "readiness:report": "node --disable-warning=ExperimentalWarning --experimental-strip-types scripts/readiness-report.mjs",
     "release:smoke": "node scripts/release/smoke.mjs",

@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(22);
 
 create function pg_temp.query_plan(p_sql text)

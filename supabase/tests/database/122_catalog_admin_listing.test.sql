@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(8);
 
 select has_function(
@@ -96,4 +97,3 @@ select throws_ok(
 
 select * from finish();
 rollback;
-

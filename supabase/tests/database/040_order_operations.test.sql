@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(53);
 
 select ok(to_regclass('public.provider_event_inbox') is not null, 'provider event inbox exists');

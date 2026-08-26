@@ -1,7 +1,8 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(28);
+set search_path = public, extensions;
+select plan(29);
 
 select ok(to_regtype('public.app_locale') is not null, 'app_locale type exists');
 select ok(to_regtype('public.staff_role') is not null, 'staff_role type exists');
@@ -44,6 +45,17 @@ select has_function('public', 'has_auth_assurance', array['text'], 'assurance he
 select has_function('app_private', 'claim_notifications', array['text', 'integer', 'interval'], 'notification lease helper exists');
 select has_function('app_private', 'claim_media_jobs', array['text', 'integer', 'interval'], 'media lease helper exists');
 select has_function('app_private', 'claim_scheduled_actions', array['text', 'integer', 'interval'], 'scheduled lease helper exists');
+
+select lives_ok(
+  $$select app_private.begin_idempotency(
+    'foundation-test',
+    repeat('a', 64),
+    'foundation-test-actor',
+    repeat('b', 64),
+    interval '1 hour'
+  )$$,
+  'idempotency acquisition resolves the unique constraint without ambiguous parameters'
+);
 
 insert into auth.users (id, email)
 values ('00000000-0000-4000-8000-000000000001', 'owner-foundation@example.invalid');

@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select no_plan();
 
 select ok(to_regclass('public.catalog_revisions') is not null, 'catalog revisions exist');

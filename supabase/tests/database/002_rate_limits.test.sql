@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(12);
 
 select ok(to_regclass('public.rate_limit_windows') is not null, 'rate-limit table exists');

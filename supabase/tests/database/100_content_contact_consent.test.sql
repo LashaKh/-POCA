@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select no_plan();
 
 select ok(to_regclass('public.content_entries') is not null, 'content entries exist');

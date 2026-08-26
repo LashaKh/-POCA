@@ -1,6 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+set search_path = public, extensions;
 select plan(34);
 
 select ok(to_regclass('public.products') is not null, 'products table exists');
