@@ -2,8 +2,9 @@
 
 **Prepared:** 2026-08-26  
 **Candidate branch:** `001-build-production-shop`  
-**Candidate commit:** `57494d03835b1e9a6ae6c2b1d8e23b62d81b0ec7`  
-**Current scope:** verified GitHub candidate; managed deployment not attempted
+**Candidate application/database commit:** `a499f3711c37c99862dc63217f2e0bca709c1628`
+
+**Current scope:** verified GitHub candidate plus managed Supabase baseline; application deployment not attempted
 
 ## Preserved evidence
 
@@ -12,24 +13,27 @@
 - WCAG and visual review:
   `docs/quality/final-accessibility-audit.md` and
   `docs/quality/final-visual-review.md`;
-- migration and restore state: 54 migrations through `202608250123`, plus
-  `docs/quality/restore-rehearsal.md`;
+- migration and restore state: 55 migrations through `202608250124`, local
+  restore evidence in `docs/quality/restore-rehearsal.md`, and managed parity,
+  lint, targeted regression and Owner evidence in
+  `docs/quality/managed-supabase-evidence.md`;
 - security artifacts: reproducible SBOM, provider inventory and 60-subject
   checksum generation via `npm run security:artifacts`; and
 - release decision: `docs/quality/production-readiness-report.md`.
 
 ## Promotion state
 
-The candidate branch is pushed to GitHub. No release tag, Netlify deploy ID or
-staging URL is recorded yet because branch governance, the Netlify site and the
-managed staging backend have not been activated. Creating a release tag before
-review and a matching immutable deploy would overstate the candidate state.
+The prior candidate branch is pushed to GitHub and the managed backend is
+linked at migration head `202608250124`. No release tag, Netlify deploy ID or
+staging URL is recorded yet because branch governance and the correct Netlify
+site have not been activated. Creating a release tag before review and a
+matching immutable deploy would overstate the candidate state.
 
 When those external inputs exist, the operator must:
 
 1. record the immutable commit SHA and create a reviewed release-candidate tag;
-2. deploy that exact commit to Netlify staging against isolated managed
-   Supabase;
+2. deploy that exact commit to Netlify staging against the confirmed managed
+   Supabase project after configuring preview-scoped Auth/environment values;
 3. run the HTTPS release smoke, SEO, accessibility, reconciliation and
    monitoring checks;
 4. preserve the Netlify deploy ID, migration head, backup/restore reference and

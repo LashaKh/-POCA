@@ -20,10 +20,12 @@ facts, approved policies, licensed production products, the real domain and live
 service configuration require external Owner/provider action. The application
 keeps those capabilities disabled or explicitly degraded until activation.
 
-An access audit confirmed the ÉPOCA Supabase project endpoint, but the installed
-CLI token belongs to unrelated projects and cannot manage it. The installed
-Netlify session belongs to the MediMind team and contains no ÉPOCA site. The
-release therefore pauses instead of deploying into the wrong organizations.
+The ÉPOCA Supabase account is now authenticated, the approved managed project
+has all 55 migrations, remote lint and targeted regression checks pass, no
+synthetic seed was uploaded, and the first MFA-required application Owner is
+auditable. The installed Netlify session still belongs to the MediMind team and
+contains no ÉPOCA site. The release therefore pauses instead of deploying the
+application into the wrong organization.
 
 ## Stage decision
 
@@ -31,11 +33,12 @@ release therefore pauses instead of deploying into the wrong organizations.
 | ------------------- | ------------------------ | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Build-complete      | **PASS**                 | Engineering         | Final verification, traceability, clean migrations, optimized build, security, accessibility, visual and recovery evidence                                              |
 | Payment-ready       | **PASS (adapter-ready)** | Engineering + Owner | Hosted-payment and bank-transfer boundaries, callbacks, replay/reconciliation and disabled-state tests pass; real merchant credentials and bank facts are not activated |
-| Staging-operational | **NOT PROVEN**           | Owner + Engineering | No linked Netlify site, isolated managed Supabase staging project, public preview smoke or live monitoring evidence                                                     |
+| Staging-operational | **NOT PROVEN**           | Owner + Engineering | Managed Supabase baseline passes; no approved Netlify site, public preview smoke, deployed Auth/Storage/jobs proof or live monitoring evidence                          |
 | Launch-ready        | **NO**                   | ÉPOCA Owner         | Production environment, PITR, domain, legal/tax/delivery facts, production catalogue/media and external provider approvals are incomplete                               |
 
 The machine-readable evaluation in ignored local evidence reports
-`payment-ready: hold` with nine blockers. “Payment-ready” means the controlled
+`payment-ready: hold`; its next run must consume the new managed-service
+evidence. “Payment-ready” means the controlled
 integration boundary is ready for activation; it does not mean a real payment
 method is currently accepting money.
 
@@ -45,7 +48,7 @@ method is currently accepting money.
 | ------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | Requirements        | PASS         | `docs/quality/requirements-traceability.md` covers FR-001–FR-114, NFR-001–NFR-012, SC-001–SC-025 and acceptance/edge cases    |
 | Source/build        | PASS         | `docs/quality/final-verification.md`; 60 test files/236 tests, strict types, lint, formatting and 206 generated page variants |
-| Database            | PASS         | 54 migrations, 17 pgTAP files/653 assertions, generated-type and drift checks                                                 |
+| Database            | PASS         | 55 migrations, 17 pgTAP files/654 local assertions, clean managed lint/parity and 29-assertion targeted remote regression     |
 | Browser journeys    | PASS         | Five-profile WCAG, 20/20 production smoke, focused stateful journey and resilience evidence                                   |
 | Visual/localization | PASS         | 576 route checks, 288 screenshots, four locales, 390/768/1440 widths, no client errors or overflow                            |
 | Load/performance    | PASS         | Catalogue, 50-way checkout and 250-file ingestion tests plus JS/query/queue budgets                                           |
@@ -58,7 +61,7 @@ method is currently accepting money.
 | Blocker                             | Accountable owner           | Closure evidence                                                                                                                                                         |
 | ----------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `ROTATE_DISCLOSED_CREDENTIALS`      | ÉPOCA Owner                 | Rotate the account password, database password and Supabase secret/service credentials disclosed in chat; revoke prior sessions and record non-secret version/timestamps |
-| `MANAGED_SUPABASE_LINK`             | Owner + Engineering         | Link an approved isolated project, apply the 54 migrations, rerun RLS/types/drift/smoke and record migration head                                                        |
+| `MANAGED_SUPABASE_CONFIGURATION`    | Owner + Engineering         | Configure deployed Auth URLs/environment scopes, run HTTPS Storage/job/health smoke, enroll Owner TOTP and reference `managed-supabase-evidence.md`                      |
 | `BACKUP_RESTORE_UNPROVEN`           | Owner + Engineering         | Enable PITR and complete a managed restore rehearsal with recorded RPO/RTO                                                                                               |
 | `NETLIFY_SITE_LINK`                 | Owner + Engineering         | Link the Netlify site, configure scoped environment values and preserve immutable preview/rollback deploy IDs                                                            |
 | `STAGING_SMOKE_UNPROVEN`            | Engineering                 | Run the release smoke, reconciliation, accessibility and SEO gates on the public HTTPS preview                                                                           |
@@ -81,8 +84,9 @@ production.
 ## Go/no-go
 
 - **Local release candidate / further activation work:** GO.
-- **Managed staging deployment:** NO-GO until credentials are rotated and
-  Netlify plus an isolated managed Supabase staging project are linked.
+- **Managed staging deployment:** NO-GO until the approved Netlify site is
+  linked and the existing managed Supabase baseline is configured for that
+  preview. Credential rotation remains mandatory before production promotion.
 - **Production launch:** NO-GO until every required activation row is proven,
   the machine-readable report reaches `launch-ready`, and the Owner explicitly
   approves the immutable candidate.
