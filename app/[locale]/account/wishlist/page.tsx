@@ -33,12 +33,13 @@ export default async function CustomerWishlistPage({
       </header>
       {products.length ? (
         <div className="product-grid">
-          {products.map((product) => (
+          {products.map((product, index) => (
             <ProductCard
               key={product.id}
               product={product}
               locale={locale}
               wishlisted
+              position={index + 1}
               imageUnavailableLabel={catalogT("imageUnavailable")}
             />
           ))}

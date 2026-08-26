@@ -65,7 +65,7 @@ export async function SiteFooter({ locale }: { locale: AppLocale }) {
   };
 
   return (
-    <footer className="site-footer-wrapper">
+    <footer className="site-footer-wrapper" data-motion-reveal="footer">
       <NewsletterForm
         locale={locale}
         disclosureVersion={newsletter.version}
@@ -73,10 +73,15 @@ export async function SiteFooter({ locale }: { locale: AppLocale }) {
         labels={labels}
       />
       <div className="site-footer">
-        <div>
-          <p>© {new Date().getUTCFullYear()} ÉPOCA</p>
-          <p>{t("home")} · Tbilisi, Georgia</p>
-          <p>{catalog("worldwideDelivery")}</p>
+        <div className="footer-identity">
+          <Link className="footer-wordmark" href="/" locale={locale}>
+            {t("brand")}
+          </Link>
+          <div className="footer-facts">
+            <p>© {new Date().getUTCFullYear()} ÉPOCA</p>
+            <p>{t("home")} · Tbilisi, Georgia</p>
+            <p>{catalog("worldwideDelivery")}</p>
+          </div>
         </div>
         <nav aria-label={t("contact")} className="footer-navigation">
           {links.map((item) => (
@@ -92,12 +97,14 @@ export async function SiteFooter({ locale }: { locale: AppLocale }) {
             </Link>
           ))}
         </nav>
-        <ConsentPreferences
-          locale={locale}
-          disclosures={disclosures}
-          current={currentConsent}
-          labels={labels}
-        />
+        <div className="footer-privacy">
+          <ConsentPreferences
+            locale={locale}
+            disclosures={disclosures}
+            current={currentConsent}
+            labels={labels}
+          />
+        </div>
       </div>
     </footer>
   );

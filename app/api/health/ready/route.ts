@@ -1,4 +1,4 @@
-import { requireAssurance, requireOwner } from "@/features/auth/authorization";
+import { requireOwnerAssurance } from "@/features/auth/authorization";
 import { resolveActorContext } from "@/features/auth/context";
 import { getCurrentAuthSessionId } from "@/features/auth/session";
 import {
@@ -17,7 +17,7 @@ async function mayReadDiagnostics() {
       client,
       await getCurrentAuthSessionId(client),
     );
-    requireAssurance(requireOwner(context), "aal2");
+    requireOwnerAssurance(context);
     return true;
   } catch {
     return false;

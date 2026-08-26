@@ -61,13 +61,14 @@ export default async function SearchPage({
       <p aria-live="polite">{t("results", { count: result.totalCount })}</p>
       {result.products.length ? (
         <div className="product-grid">
-          {result.products.map((product) => (
+          {result.products.map((product, index) => (
             <ProductCard
               key={product.id}
               product={product}
               locale={locale}
               imageUnavailableLabel={t("imageUnavailable")}
               wishlisted={wishlist.has(product.id)}
+              position={index + 1}
             />
           ))}
         </div>

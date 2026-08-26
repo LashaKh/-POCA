@@ -45,6 +45,24 @@ export function requireOwner(context: ActorContext): StaffActorContext {
   return staff;
 }
 
+export function canBypassLocalOwnerMfa(context: ActorContext) {
+  return (
+    process.env.DEPLOY_ENV === "local" &&
+    context.kind === "staff" &&
+    context.role === "owner" &&
+    context.active &&
+    context.email?.toLowerCase().endsWith("@epoca.local") === true
+  );
+}
+
+export function requireOwnerAssurance(
+  context: ActorContext,
+): StaffActorContext {
+  const owner = requireOwner(context);
+  if (!canBypassLocalOwnerMfa(owner)) requireAssurance(owner, "aal2");
+  return owner;
+}
+
 export function requireAssurance(
   context: ActorContext,
   level: "aal1" | "aal2",

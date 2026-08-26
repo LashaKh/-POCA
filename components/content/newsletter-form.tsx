@@ -30,7 +30,7 @@ export function NewsletterForm({
   >(withdrawNewsletterAction, undefined);
   return (
     <section className="newsletter-panel" aria-labelledby="newsletter-title">
-      <div>
+      <div className="newsletter-copy">
         <p className="eyebrow">ÉPOCA</p>
         <h2 id="newsletter-title">{labels.newsletterTitle}</h2>
         <p>{labels.newsletterIntro}</p>
@@ -58,7 +58,7 @@ export function NewsletterForm({
               : ""}
         </span>
       </form>
-      <details>
+      <details className="newsletter-withdrawal">
         <summary>{labels.withdraw}</summary>
         <form action={withdrawAction} className="newsletter-form">
           <input type="hidden" name="locale" value={locale} />

@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { requireAssurance, requireOwner } from "@/features/auth/authorization";
+import { requireOwnerAssurance } from "@/features/auth/authorization";
 import { resolveActorContext } from "@/features/auth/context";
 import { getCurrentAuthSessionId } from "@/features/auth/session";
 import { isAppLocale } from "@/i18n/routing";
@@ -21,10 +21,9 @@ export type StaffActionState = CommandResult<{ completed: true }> | undefined;
 
 async function ownerClient() {
   const client = await createServerSupabaseClient();
-  const context = requireOwner(
+  const context = requireOwnerAssurance(
     await resolveActorContext(client, await getCurrentAuthSessionId(client)),
   );
-  requireAssurance(context, "aal2");
   return { client, context };
 }
 

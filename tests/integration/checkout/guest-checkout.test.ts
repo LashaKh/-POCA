@@ -53,7 +53,7 @@ describe.skipIf(!local)("local Supabase guest checkout boundary", () => {
     const { data: product, error: productError } = await client
       .from("products")
       .select("id")
-      .eq("sku", "SYN-00002")
+      .eq("sku", "SYN-00006")
       .single();
     expect(productError).toBeNull();
     const { error: addError } = await client.rpc("add_guest_cart_item", {

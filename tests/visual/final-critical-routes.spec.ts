@@ -27,6 +27,7 @@ const publicRoutes = [
   { label: "delivery", path: "/delivery" },
   { label: "returns", path: "/returns" },
   { label: "contact", path: "/contact" },
+  { label: "journal", path: "/journal" },
   { label: "sign-in", path: "/auth/sign-in" },
 ] as const;
 
@@ -107,6 +108,44 @@ test("all critical routes complete the final four-locale responsive review", asy
       overflow,
       `${locale}${route.path} at ${viewport.width}px`,
     ).toBeLessThanOrEqual(1);
+    if (route.label === "journal") {
+      const composition = await page.evaluate(() => {
+        const siteHeader = document.querySelector<HTMLElement>(".site-header");
+        const title = document.querySelector<HTMLElement>(".journal-hero h1");
+        const emptyState =
+          document.querySelector<HTMLElement>(".journal-empty");
+        const collectionLink = document.querySelector<HTMLElement>(
+          ".journal-empty-link",
+        );
+        const footerWordmark =
+          document.querySelector<HTMLElement>(".footer-wordmark");
+        const titleRange = document.createRange();
+        if (title) titleRange.selectNodeContents(title);
+        return {
+          headerHeight: siteHeader?.getBoundingClientRect().height ?? 0,
+          titleLineCount: title
+            ? new Set(
+                Array.from(titleRange.getClientRects()).map((rect) =>
+                  Math.round(rect.top),
+                ),
+              ).size
+            : 0,
+          emptyStateVisible: Boolean(emptyState?.getClientRects().length),
+          collectionLinkVisible: Boolean(
+            collectionLink?.getClientRects().length,
+          ),
+          footerWordmarkVisible: Boolean(
+            footerWordmark?.getClientRects().length,
+          ),
+        };
+      });
+      const maximumHeaderHeight = viewport.width >= 1_000 ? 170 : 320;
+      expect(composition.headerHeight).toBeLessThanOrEqual(maximumHeaderHeight);
+      expect(composition.titleLineCount).toBe(1);
+      expect(composition.emptyStateVisible).toBe(true);
+      expect(composition.collectionLinkVisible).toBe(true);
+      expect(composition.footerWordmarkVisible).toBe(true);
+    }
     const entry: ReviewEntry = {
       pass,
       locale,

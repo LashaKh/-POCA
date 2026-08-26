@@ -1,10 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   AuthorizationError,
   requireAssurance,
   requireManager,
   requireOwner,
+  requireOwnerAssurance,
 } from "@/features/auth/authorization";
 import { isSafeReturnPath, type ActorContext } from "@/features/auth/context";
 
@@ -16,6 +17,18 @@ const manager: ActorContext = {
   assuranceLevel: "aal1",
   sessionState: "active",
 };
+
+const localOwner: ActorContext = {
+  kind: "staff",
+  profileId: "owner",
+  email: "owner@epoca.local",
+  role: "owner",
+  active: true,
+  assuranceLevel: "aal1",
+  sessionState: "active",
+};
+
+afterEach(() => vi.unstubAllEnvs());
 
 describe("authorization", () => {
   it("allows an active Manager through the Manager boundary", () => {
@@ -30,6 +43,25 @@ describe("authorization", () => {
     expect(() => requireAssurance(manager, "aal2")).toThrowError(
       "MFA_REQUIRED",
     );
+  });
+
+  it("lets the explicit local preview Owner work without MFA", () => {
+    vi.stubEnv("DEPLOY_ENV", "local");
+    expect(requireOwnerAssurance(localOwner)).toBe(localOwner);
+  });
+
+  it("still requires MFA for the Owner outside the local preview", () => {
+    vi.stubEnv("DEPLOY_ENV", "production");
+    expect(() => requireOwnerAssurance(localOwner)).toThrowError(
+      "MFA_REQUIRED",
+    );
+  });
+
+  it("still requires MFA for non-preview Owner accounts locally", () => {
+    vi.stubEnv("DEPLOY_ENV", "local");
+    expect(() =>
+      requireOwnerAssurance({ ...localOwner, email: "owner@epoca.test" }),
+    ).toThrowError("MFA_REQUIRED");
   });
 
   it("rejects revoked staff sessions", () => {

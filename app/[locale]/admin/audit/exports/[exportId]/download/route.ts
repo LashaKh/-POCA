@@ -1,4 +1,4 @@
-import { requireAssurance, requireOwner } from "@/features/auth/authorization";
+import { requireOwnerAssurance } from "@/features/auth/authorization";
 import { resolveActorContext } from "@/features/auth/context";
 import { getCurrentAuthSessionId } from "@/features/auth/session";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -10,10 +10,9 @@ export async function GET(
   const { exportId } = await params;
   const client = await createServerSupabaseClient();
   try {
-    const context = requireOwner(
+    requireOwnerAssurance(
       await resolveActorContext(client, await getCurrentAuthSessionId(client)),
     );
-    requireAssurance(context, "aal2");
   } catch {
     return new Response(null, { status: 403 });
   }

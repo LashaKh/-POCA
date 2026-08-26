@@ -9936,6 +9936,7 @@ export type Database = {
         Args: { p_guest_subject_hash: string; p_profile_id: string }
         Returns: number
       }
+      owner_has_required_assurance: { Args: never; Returns: boolean }
       process_due_catalog_publications: {
         Args: { p_limit?: number }
         Returns: Json

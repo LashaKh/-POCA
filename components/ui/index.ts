@@ -3,6 +3,7 @@ export { DataTable } from "./data-table";
 export { DependencyState } from "./dependency-state";
 export { Dialog } from "./dialog";
 export { Field } from "./field";
+export { AccountIcon, ArrowUpRightIcon, BagIcon, HeartIcon } from "./icons";
 export { TextLink } from "./link";
 export { MediaFallback } from "./media-fallback";
 export { LiveRegion, Notice } from "./notice";

@@ -41,7 +41,7 @@ describe.skipIf(!local)("local production operations", () => {
       .insert({
         action_type: "integration.reconcile",
         subject_type: "operations-test",
-        due_at: new Date(Date.now() - 60_000).toISOString(),
+        due_at: "1970-01-01T00:00:00.000Z",
         idempotency_key: `operations-action-${suffix}`,
         correlation_id: crypto.randomUUID(),
       })

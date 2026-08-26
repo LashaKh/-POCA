@@ -200,13 +200,14 @@ export default async function ProductPage({
         <section className="related-products">
           <h2>{t("related")}</h2>
           <div className="product-grid">
-            {relatedProducts.map((related) => (
+            {relatedProducts.map((related, index) => (
               <ProductCard
                 key={related.id}
                 product={related}
                 locale={locale}
                 imageUnavailableLabel={t("imageUnavailable")}
                 wishlisted={wishlist.has(related.id)}
+                position={index + 1}
               />
             ))}
           </div>

@@ -27,6 +27,7 @@ export type CustomerActorContext = {
 export type StaffActorContext = {
   kind: "staff";
   profileId: string;
+  email?: string;
   assuranceLevel: AssuranceLevel;
   sessionState: SessionState;
   role: "owner" | "manager";
@@ -121,6 +122,10 @@ export async function resolveActorContext(
   return {
     kind: "staff",
     profileId,
+    email:
+      typeof claimsData.claims.email === "string"
+        ? claimsData.claims.email
+        : undefined,
     assuranceLevel,
     sessionState,
     role: staff.role,

@@ -6,6 +6,7 @@ import type { AppLocale } from "@/i18n/routing";
 
 import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
+import { StorefrontMotion } from "./storefront-motion";
 
 type SiteShellProps = {
   children: ReactNode;
@@ -32,6 +33,7 @@ export async function SiteShell({ children, locale }: SiteShellProps) {
       />
       {children}
       <SiteFooter locale={locale} />
+      <StorefrontMotion />
     </div>
   );
 }

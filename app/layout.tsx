@@ -9,6 +9,7 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
+import "./storefront-polish.css";
 
 import { defaultLocale, isAppLocale } from "@/i18n/routing";
 

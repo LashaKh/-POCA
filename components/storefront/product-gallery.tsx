@@ -30,6 +30,7 @@ export function ProductGallery({
     <section className="product-gallery" aria-label={galleryLabel}>
       <div className="product-gallery-stage">
         <ResponsiveProductImage
+          key={selected?.id}
           src={selected?.src ?? undefined}
           alt={selected?.alt ?? name}
           fallbackLabel={selected?.alt ?? `${name}: ${imageUnavailableLabel}`}

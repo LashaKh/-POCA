@@ -111,6 +111,7 @@ test("content, service, contact, consent, and administration remain accessible a
       `/${locale}/about`,
       `/${locale}/privacy`,
       `/${locale}/contact`,
+      `/${locale}/journal`,
     ])
       await expectAccessibleSurface(page, path);
     await page.screenshot({

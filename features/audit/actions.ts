@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-import { requireAssurance, requireOwner } from "@/features/auth/authorization";
+import { requireOwnerAssurance } from "@/features/auth/authorization";
 import { resolveActorContext } from "@/features/auth/context";
 import { getCurrentAuthSessionId } from "@/features/auth/session";
 import { isAppLocale } from "@/i18n/routing";
@@ -44,10 +44,9 @@ export async function requestAuditExportAction(
   if (!parsed.success) return failure();
   try {
     const client = await createServerSupabaseClient();
-    const context = requireOwner(
+    requireOwnerAssurance(
       await resolveActorContext(client, await getCurrentAuthSessionId(client)),
     );
-    requireAssurance(context, "aal2");
     const protectedResult = await client.rpc("record_protected_operation", {
       p_operation_type: "export-sensitive",
       p_entity_type: "audit",

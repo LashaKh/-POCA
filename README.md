@@ -30,8 +30,10 @@ npm run dev:local
 ```
 
 Open `http://127.0.0.1:3000/ka`. The staff helper prints a random local password
-once; Owner sign-in at `http://127.0.0.1:3000/en/admin` continues to MFA
-(multi-factor authentication) enrolment. Create a separate Manager if needed:
+once. Owner sign-in at `http://127.0.0.1:3000/en/admin` skips MFA
+(multi-factor authentication) only for the reserved `@epoca.local` account on
+the local Supabase stack; hosted and production Owner access still requires
+MFA. Create a separate Manager if needed:
 
 ```bash
 npm run staff:local -- --role manager --email manager@epoca.local

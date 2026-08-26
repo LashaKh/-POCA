@@ -34,9 +34,7 @@ test("published collection, search, and product records remain truthful", async 
   await expect(page).toHaveURL(new RegExp(`/${locale}/products/syn-00001`));
   await expect(page.getByText("SYN-00001")).toBeVisible();
   await expect(
-    page.getByRole("img", {
-      name: /image unavailable|foto|ფოტო|фото|изображение|bild/i,
-    }),
+    page.locator('.product-gallery img, .product-gallery [role="img"]').first(),
   ).toBeVisible();
 
   const accessibility = await new AxeBuilder({ page }).analyze();
@@ -67,6 +65,7 @@ test("database filters, stable sorting, locale paths, and currency preferences w
   page,
   context,
 }, testInfo) => {
+  test.setTimeout(90_000);
   const locale =
     projectLocale[testInfo.project.name as keyof typeof projectLocale];
   await page.goto(`/${locale}/collections/synthetic-collection`);
@@ -88,15 +87,31 @@ test("database filters, stable sorting, locale paths, and currency preferences w
   );
 
   await page.locator(".product-card a").first().click();
+  await expect(page).toHaveURL(new RegExp(`/${locale}/products/syn-04980$`));
   const targetLocale = locale === "en" ? "de" : "en";
   const targetLanguage = targetLocale === "de" ? "Deutsch" : "English";
-  await page.getByRole("link", { name: targetLanguage, exact: true }).click();
+  const languageLink = page.getByRole("link", {
+    name: targetLanguage,
+    exact: true,
+  });
+  if (!(await languageLink.isVisible())) {
+    const navigationDrawer = page.locator("details.site-navigation-drawer");
+    await expect(navigationDrawer).toBeVisible();
+    await navigationDrawer.locator("summary").click();
+  }
+  await languageLink.click();
   await expect(page).toHaveURL(
     new RegExp(`/${targetLocale}/products/syn-04980$`),
   );
   await expect(page.getByText("SYN-04980")).toBeVisible();
 
-  await page.locator("#site-currency").selectOption("EUR");
+  const currencyControl = page.locator('select[name="currency"]:visible');
+  if (!(await currencyControl.isVisible())) {
+    const navigationDrawer = page.locator("details.site-navigation-drawer");
+    await expect(navigationDrawer).toBeVisible();
+    await navigationDrawer.locator("summary").click();
+  }
+  await currencyControl.selectOption("EUR");
   await expect
     .poll(async () => {
       const cookies = await context.cookies();

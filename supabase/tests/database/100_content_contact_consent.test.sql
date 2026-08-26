@@ -108,12 +108,17 @@ select is(
   (public.publish_content_menu(
     'header',
     '[{"itemKey":"catalog","destinationPath":"/en/catalog","labels":{"ka":"კატალოგი","en":"Catalog","de":"Katalog","ru":"Каталог"},"position":10,"enabled":true}]',
-    'published', 1, 'Publish the primary navigation'
+    'published',
+    (select version from public.content_menus where menu_key = 'header'),
+    'Publish the primary navigation'
   )).status,
   'published',
   'four-language navigation publishes atomically'
 );
-select is((select count(*) from public.content_menu_revisions), 1::bigint, 'menu publication creates a snapshot');
+select is((
+  select count(*) from public.content_menu_revisions
+  where reason = 'Publish the primary navigation'
+), 1::bigint, 'menu publication creates a snapshot');
 
 select is(
   (public.configure_content_redirect(

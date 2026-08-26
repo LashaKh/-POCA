@@ -16,6 +16,7 @@ Editorial and service content combines long localized copy, private contact data
 | Touch sizing                      | Visible buttons, inputs, selects, textareas, summaries, and Manager navigation                                                   | PASS — at least 44 CSS px high                                                                                                                                 |
 | Responsive behavior               | 390, 768, and 1440 CSS px with all four locales                                                                                  | PASS — no document-level horizontal scrolling; long Manager navigation is contained in its own scroller                                                        |
 | Progressive state                 | Native-valid editor form, server-action hydration, status announcements, private references, and explicit legal/fallback notices | PASS — actions remain recoverable and do not visually claim success early                                                                                      |
+| Journal and shared shell          | Focused Collector’s Index composition gate on `/journal` across all five browser projects                                        | PASS — compact header, intentional empty state, structured footer, 44 px controls, zero overflow and zero Axe violations                                       |
 
 ## Screenshots
 
@@ -43,6 +44,7 @@ Manager content/navigation/redirect surfaces:
 - Manager navigation has its own bounded horizontal lane, preventing long translated labels and eleven operational destinations from overlapping the brand or session controls.
 - The 390 px Manager editor/cards stack without document panning; 768/1440 layouts progressively use additional columns.
 - Legal-dependent Privacy, Cookie, Terms, Delivery, and Returns fallback pages visibly state that final legal wording is not approved and are excluded from indexing until reviewed copy is published.
+- The Journal empty state now remains useful and composed before any reviewed entry exists, with a clear route back to the collection. The focused regression is `tests/visual/journal-shell.spec.ts`.
 
 ## Outcome
 

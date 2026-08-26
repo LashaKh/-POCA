@@ -1,6 +1,42 @@
-import { execFileSync, spawn } from "node:child_process";
+import { execFileSync, spawn, spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+
+if (Number(process.versions.node.split(".")[0]) !== 24) {
+  const candidates = [
+    process.env.EPOCA_NODE24,
+    join(
+      homedir(),
+      ".cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    ),
+  ].filter(Boolean);
+  const node24 = candidates.find((candidate) => {
+    if (!existsSync(candidate)) return false;
+    try {
+      return (
+        execFileSync(candidate, ["-p", "process.versions.node.split('.')[0]"], {
+          encoding: "utf8",
+        }).trim() === "24"
+      );
+    } catch {
+      return false;
+    }
+  });
+  if (!node24) {
+    throw new Error(
+      "ÉPOCA local development requires Node.js 24. Set EPOCA_NODE24 to its executable path.",
+    );
+  }
+  const relaunched = spawnSync(node24, [fileURLToPath(import.meta.url)], {
+    stdio: "inherit",
+    env: process.env,
+  });
+  if (relaunched.error) throw relaunched.error;
+  process.exit(relaunched.status ?? 1);
+}
 
 const statusOutput = execFileSync(
   fileURLToPath(new URL("../node_modules/.bin/supabase", import.meta.url)),

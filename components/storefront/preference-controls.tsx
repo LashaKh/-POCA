@@ -52,21 +52,23 @@ export function CurrencyControl({
   currencies,
   label,
   applyLabel,
+  controlId = "site-currency",
 }: {
   currency: SupportedCurrency;
   currencies: SupportedCurrency[];
   label: string;
   applyLabel: string;
+  controlId?: string;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
 
   return (
     <form ref={formRef} action={setCurrencyPreference}>
-      <label className="visually-hidden" htmlFor="site-currency">
+      <label className="visually-hidden" htmlFor={controlId}>
         {label}
       </label>
       <select
-        id="site-currency"
+        id={controlId}
         name="currency"
         defaultValue={currency}
         aria-label={label}

@@ -7,6 +7,7 @@ import {
   type WishlistActionState,
 } from "@/features/wishlist/actions";
 import type { AppLocale } from "@/i18n/routing";
+import { HeartIcon } from "@/components/ui";
 
 export function WishlistButton({
   productId,
@@ -38,8 +39,8 @@ export function WishlistButton({
         disabled={pending}
         aria-pressed={saved}
       >
-        <span aria-hidden="true">{saved ? "♥" : "♡"}</span>{" "}
-        {saved ? labels.remove : labels.save}
+        <HeartIcon className="wishlist-icon" filled={saved} />
+        <span>{saved ? labels.remove : labels.save}</span>
       </button>
       {state && !state.ok ? (
         <span className="field-error" role="alert">

@@ -4,6 +4,12 @@
 **Direction:** Collector’s Index  
 **Result:** PASS
 
+> Correction — 2026-08-26: the original critical-route matrix did not include
+> `/journal`, and its automation checked rendering mechanics rather than judging
+> the screenshots it captured. The Journal and shared storefront-shell
+> remediation described below was reviewed separately across the full browser
+> matrix, and `/journal` is now part of future critical-route runs.
+
 ## Review method
 
 The critical-route matrix ran twice: first as a diagnostic pass and then as a
@@ -26,6 +32,22 @@ EPOCA_EXTERNAL_SMOKE=1 SITE_URL=http://127.0.0.1:3015 \
 | Maximum document overflow    |   0 px |
 | Client errors                |      0 |
 
+These figures describe the original 24-route run. They are retained as its
+historical record and must not be cited as evidence for the Journal page.
+
+The focused remediation gate ran with:
+
+```bash
+EPOCA_EXTERNAL_SMOKE=1 PLAYWRIGHT_BASE_URL=http://127.0.0.1:3005 \
+  npx playwright test tests/visual/journal-shell.spec.ts --workers=1
+```
+
+It passed in Georgian at 390 px, English at 768 px, German at 1440 px,
+Russian in Firefox, and English in WebKit. It verifies the compact header,
+single-line localized Journal title, intentional empty state, collection
+recovery link, footer structure, zero overflow, 44 px controls, and zero Axe
+violations.
+
 The ignored local manifest at
 `artifacts/visual-review/final-critical-routes/manifest.json` records every
 route, locale, viewport, overflow measurement and screenshot filename. Generated
@@ -34,7 +56,7 @@ screenshots are evidence artifacts rather than repository source.
 ## Surfaces reviewed
 
 - Public: home, collection, product, search, cart, checkout, delivery, returns,
-  contact and sign-in.
+  contact, Journal and sign-in.
 - Manager: dashboard, products, product creation, ingestion, orders, returns,
   reports, content and delivery settings.
 - Owner with MFA: audit, operations, staff, privacy and integrations.
@@ -56,6 +78,12 @@ unexpected loading/system-state pages.
 3. Large administration catalogues originally produced an impractical wall of
    pagination links. Pagination is now a bounded first/nearby/last window with
    previous and next actions.
+4. The empty Journal exposed an oversized stacked utility header, an
+   uncomposed text-only state, and a raw newsletter/footer. The shared shell is
+   now a compact two-level Collector’s Index frame; Journal has a truthful
+   editorial empty state and a direct route back to the collection. A focused
+   five-project regression test now checks composition and accessibility, not
+   merely screenshot generation.
 
 No visual exception or unresolved responsive defect is accepted for the local
 release candidate. Production imagery and final business copy remain an Owner

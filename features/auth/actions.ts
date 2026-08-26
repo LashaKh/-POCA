@@ -20,6 +20,7 @@ import {
 } from "@/lib/validation/command-result";
 
 import { isSafeReturnPath, resolveActorContext } from "./context";
+import { canBypassLocalOwnerMfa } from "./authorization";
 import { registerCurrentSession } from "./session";
 import { mergeCurrentGuestIntoCustomer } from "@/features/wishlist/merge";
 
@@ -166,8 +167,9 @@ export async function signInAction(
   }
   recordOutcome("succeeded");
   if (
-    assurance?.nextLevel === "aal2" ||
-    (context.kind === "staff" && context.role === "owner")
+    !canBypassLocalOwnerMfa(context) &&
+    (assurance?.nextLevel === "aal2" ||
+      (context.kind === "staff" && context.role === "owner"))
   ) {
     redirect(
       `/${parsed.data.locale}/auth/mfa?returnTo=${encodeURIComponent(returnTo)}`,

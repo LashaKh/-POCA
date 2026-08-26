@@ -101,7 +101,7 @@ process.stdout.write(
     `Password (shown once): ${password}`,
     "Sign in at: http://127.0.0.1:3000/en/admin",
     values.role === "owner"
-      ? "The first sign-in continues to authenticator enrollment."
+      ? "Local Owner MFA is bypassed; hosted Owner access still requires MFA."
       : "Manager access is ready after sign-in.",
   ].join("\n") + "\n",
 );
