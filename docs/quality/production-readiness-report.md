@@ -20,6 +20,11 @@ facts, approved policies, licensed production products, the real domain and live
 service configuration require external Owner/provider action. The application
 keeps those capabilities disabled or explicitly degraded until activation.
 
+An access audit confirmed the ÉPOCA Supabase project endpoint, but the installed
+CLI token belongs to unrelated projects and cannot manage it. The installed
+Netlify session belongs to the MediMind team and contains no ÉPOCA site. The
+release therefore pauses instead of deploying into the wrong organizations.
+
 ## Stage decision
 
 | Stage               | Result                   | Owner               | Proof or missing proof                                                                                                                                                  |
