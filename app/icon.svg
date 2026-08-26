@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#f3ede3"/>
+  <path d="M10 10h4v44h-4z" fill="#9e3027"/>
+  <text x="17" y="51" fill="#171410" font-family="Georgia, 'Times New Roman', serif" font-size="50" font-weight="700">É</text>
+</svg>

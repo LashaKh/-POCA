@@ -100,6 +100,53 @@ function localEnvironment() {
   );
 }
 
+function targetEnvironment() {
+  const managedUrl = process.env.EPOCA_SUPABASE_URL?.trim();
+  const managedKey = process.env.EPOCA_SUPABASE_SERVICE_ROLE_KEY?.trim();
+
+  if (managedUrl || managedKey) {
+    if (!managedUrl || !managedKey) {
+      throw new Error(
+        "Managed demo loading requires both EPOCA_SUPABASE_URL and EPOCA_SUPABASE_SERVICE_ROLE_KEY.",
+      );
+    }
+    if (process.env.EPOCA_ALLOW_MANAGED_DEMO_MEDIA !== "true") {
+      throw new Error(
+        "Refusing managed writes without EPOCA_ALLOW_MANAGED_DEMO_MEDIA=true.",
+      );
+    }
+    const apiUrl = new URL(managedUrl);
+    if (apiUrl.hostname !== "ryppdiplsdfwaobzdrim.supabase.co") {
+      throw new Error(
+        "Managed demo loading is restricted to the confirmed ÉPOCA Supabase project.",
+      );
+    }
+    return {
+      API_URL: apiUrl.toString(),
+      SERVICE_ROLE_KEY: managedKey,
+      managed: true,
+      label: "managed ÉPOCA preview",
+    };
+  }
+
+  const environment = localEnvironment();
+  const apiUrl = new URL(environment.API_URL ?? "");
+  if (!["127.0.0.1", "localhost"].includes(apiUrl.hostname)) {
+    throw new Error(
+      "Refusing to load demonstration media outside local Supabase.",
+    );
+  }
+  if (!environment.SERVICE_ROLE_KEY) {
+    throw new Error("Local Supabase did not report a service role key.");
+  }
+  return {
+    API_URL: apiUrl.toString(),
+    SERVICE_ROLE_KEY: environment.SERVICE_ROLE_KEY,
+    managed: false,
+    label: "local Supabase",
+  };
+}
+
 function checksum(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
@@ -155,20 +202,145 @@ async function requireData(promise, label) {
   return result.data;
 }
 
-const environment = localEnvironment();
-const apiUrl = new URL(environment.API_URL ?? "");
-if (!["127.0.0.1", "localhost"].includes(apiUrl.hostname)) {
-  throw new Error(
-    "Refusing to load demonstration media outside local Supabase.",
-  );
-}
-if (!environment.SERVICE_ROLE_KEY) {
-  throw new Error("Local Supabase did not report a service role key.");
-}
-
-const service = createClient(apiUrl.toString(), environment.SERVICE_ROLE_KEY, {
+const environment = targetEnvironment();
+const service = createClient(environment.API_URL, environment.SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
+
+async function ensureManagedDemoCatalog() {
+  if (!environment.managed) return;
+
+  const collectionId = "21000000-0000-4000-8000-000000000001";
+  const now = new Date().toISOString();
+  await requireData(
+    service.from("collections").upsert(
+      {
+        id: collectionId,
+        code: "licensed-demo-collection",
+        status: "published",
+        published_at: now,
+        order_strategy: "manual",
+      },
+      { onConflict: "id" },
+    ),
+    "Create managed demo collection",
+  );
+
+  const collectionNames = {
+    ka: ["ლიცენზირებული დემო კოლექცია", "მხოლოდ ინტერფეისის დემონსტრაციისთვის."],
+    en: ["Licensed Demo Collection", "For interface demonstration only."],
+    de: ["Lizenzierte Demo-Kollektion", "Nur zur Demonstration der Oberfläche."],
+    ru: ["Лицензированная демо-коллекция", "Только для демонстрации интерфейса."],
+  };
+  await requireData(
+    service.from("collection_translations").upsert(
+      Object.entries(collectionNames).map(([locale, [name, description]]) => ({
+        collection_id: collectionId,
+        locale,
+        slug: "licensed-demo-collection",
+        name,
+        description,
+        seo_title: name,
+        seo_description: description,
+        status: "published",
+      })),
+      { onConflict: "collection_id,locale" },
+    ),
+    "Translate managed demo collection",
+  );
+
+  const products = await requireData(
+    service
+      .from("products")
+      .upsert(
+        records.map((record) => ({
+          sku: record.sku,
+          status: "published",
+          readiness_passed: true,
+          published_at: now,
+          materials: [],
+          colors: [],
+          styles: [],
+          condition: "licensed-demo-only",
+          delivery_class: "demo-only",
+          provenance_summary: `Licensed demonstration photograph by ${record.creator} via Pexels; this is not physical-carpet provenance.`,
+          provenance_verified: true,
+          search_visible: true,
+          structured_data_eligible: false,
+        })),
+        { onConflict: "sku" },
+      )
+      .select("id,sku"),
+    "Create managed demo products",
+  );
+
+  const productBySku = new Map(products.map((product) => [product.sku, product]));
+  await requireData(
+    service.from("product_translations").upsert(
+      records.flatMap((record) => {
+        const product = productBySku.get(record.sku);
+        if (!product) throw new Error(`Missing managed product ${record.sku}.`);
+        return ["ka", "en", "de", "ru"].map((locale) => ({
+          product_id: product.id,
+          locale,
+          slug: record.sku.toLowerCase(),
+          ...localizedCopy(locale, record.titles[locale], record.creator),
+        }));
+      }),
+      { onConflict: "product_id,locale" },
+    ),
+    "Translate managed demo products",
+  );
+
+  const productIds = products.map((product) => product.id);
+  await requireData(
+    service.from("product_prices").delete().in("product_id", productIds),
+    "Replace managed demo prices",
+  );
+  const currencyAmounts = { GEL: 120000, USD: 45000, EUR: 42000 };
+  await requireData(
+    service.from("product_prices").insert(
+      products.flatMap((product, index) =>
+        Object.entries(currencyAmounts).map(([currency, baseAmount]) => ({
+          product_id: product.id,
+          currency,
+          amount_minor: baseAmount + index * 2500,
+          enabled: true,
+          source: "explicit",
+          source_reference: "licensed-demo-preview",
+        })),
+      ),
+    ),
+    "Create managed demo prices",
+  );
+  await requireData(
+    service.from("inventory_items").upsert(
+      products.map((product) => ({
+        product_id: product.id,
+        stock_model: "unique",
+        on_hand_quantity: 0,
+        reserved_quantity: 0,
+        low_stock_threshold: 0,
+      })),
+      { onConflict: "product_id" },
+    ),
+    "Create managed demo inventory",
+  );
+  await requireData(
+    service.from("collection_products").upsert(
+      products.map((product, index) => ({
+        collection_id: collectionId,
+        product_id: product.id,
+        position: index + 1,
+        featured: true,
+      })),
+      { onConflict: "collection_id,product_id" },
+    ),
+    "Feature managed demo products",
+  );
+}
+
+await ensureManagedDemoCatalog();
 const loaded = [];
 
 for (const record of records) {
@@ -456,6 +628,6 @@ for (const record of records) {
 }
 
 process.stdout.write(
-  `Loaded ${loaded.length} licensed demonstration carpets into local Supabase.\n` +
+  `Loaded ${loaded.length} licensed demonstration carpets into ${environment.label}.\n` +
     loaded.map((item) => `- ${item.sku}: ${item.assetId}\n`).join(""),
 );
