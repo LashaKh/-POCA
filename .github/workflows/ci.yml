@@ -1,0 +1,149 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: "true"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  source-and-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx vitest run tests/contract
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run db:migrations:check
+      - run: npm run db:start
+      - name: Rebuild the local database
+        continue-on-error: true
+        run: npm run db:reset
+      - run: npm run db:seed:verify
+      - run: npm run db:test
+      - run: npm run db:types:check
+      - run: npm run db:drift:check
+
+  build-and-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run db:start
+      - name: Export ephemeral local Supabase values
+        shell: bash
+        run: |
+          eval "$(npx supabase status -o env)"
+          echo "DEPLOY_ENV=local" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE_KEY" >> "$GITHUB_ENV"
+          echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY" >> "$GITHUB_ENV"
+          echo "PAYMENT_PROVIDER_MODE=fixture" >> "$GITHUB_ENV"
+          echo "EMAIL_PROVIDER_MODE=fixture" >> "$GITHUB_ENV"
+          echo "ASSISTANCE_PROVIDER_MODE=disabled" >> "$GITHUB_ENV"
+          echo "ANALYTICS_PROVIDER_MODE=disabled" >> "$GITHUB_ENV"
+          echo "MONITORING_PROVIDER_MODE=fixture" >> "$GITHUB_ENV"
+      - run: npm run env:check
+      - run: npm run security:audit
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-security-evidence
+          path: |
+            .next/build-manifest.json
+            .next/routes-manifest.json
+          retention-days: 14
+
+  browser-smoke:
+    runs-on: ubuntu-latest
+    needs: [source-and-contracts, database, build-and-security]
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run db:start
+      - name: Rebuild the local database
+        continue-on-error: true
+        run: npm run db:reset
+      - run: npm run db:seed:verify
+      - run: npx playwright test tests/smoke/production-gates.spec.ts --project=desktop-1440-de
+      - name: Run stateless storefront and access smoke journeys
+        run: npx playwright test tests/e2e/storefront-discovery.spec.ts tests/e2e/admin-access.spec.ts --project=desktop-1440-de
+      - name: Run stateful commerce, ingestion, and operations smoke journeys
+        run: npx playwright test tests/e2e/guest-bank-transfer.spec.ts tests/e2e/product-ingestion.spec.ts tests/e2e/order-operations.spec.ts --project=tablet-768-en
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-smoke-evidence
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+  accessibility:
+    runs-on: ubuntu-latest
+    needs: [source-and-contracts, database, build-and-security]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run db:start
+      - name: Rebuild the local database
+        continue-on-error: true
+        run: npm run db:reset
+      - run: npm run db:seed:verify
+      - run: npx playwright test tests/accessibility
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: accessibility-evidence
+          path: |
+            playwright-report/
+            test-results/
+            docs/quality/screenshots/
+          retention-days: 14

@@ -1,0 +1,14 @@
+.next/
+.netlify/
+coverage/
+dist/
+build/
+node_modules/
+package-lock.json
+lib/supabase/database.types.ts
+playwright-report/
+test-results/
+design-directions/
+specs/**/tasks.md.pre-upgrade
+specs/**/plan.md.pre-upgrade
+specs/**/spec.md.pre-upgrade

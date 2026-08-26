@@ -1,0 +1,79 @@
+name: Release gates
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_url:
+        description: "HTTPS Netlify deploy permalink to smoke-test"
+        required: false
+        type: string
+      release_target:
+        description: "Readiness target"
+        required: true
+        default: staging
+        type: choice
+        options: [preview, staging, production]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}-${{ inputs.release_target }}
+  cancel-in-progress: false
+
+jobs:
+  full-local-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run db:start
+      - name: Rebuild the local database
+        continue-on-error: true
+        run: npm run db:reset
+      - run: npm run db:seed:verify
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run db:test
+      - run: npm run db:types:check
+      - run: npm run db:drift:check
+      - run: npm run security:audit
+      - run: npm run build:local
+      - run: npx playwright test tests/smoke/production-gates.spec.ts --project=desktop-1440-de
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-gate-evidence
+          path: |
+            playwright-report/
+            test-results/
+            artifacts/
+          retention-days: 30
+
+  netlify-smoke:
+    if: ${{ inputs.deploy_url != '' }}
+    needs: full-local-gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run release:smoke
+        env:
+          SMOKE_BASE_URL: ${{ inputs.deploy_url }}

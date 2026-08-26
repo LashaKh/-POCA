@@ -1,0 +1,2 @@
+-- Intentionally empty until the first catalog migration defines safe synthetic fixtures.
+-- Production data is never sourced from this local seed file.

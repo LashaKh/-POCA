@@ -1,0 +1,6 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# Repository behavior lives in AGENTS.md and .agents/skills/.
+# Keep machine-specific model, authentication, notification, and permission
+# choices in ~/.codex/config.toml rather than committing them to this project.
+

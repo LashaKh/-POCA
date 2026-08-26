@@ -1,0 +1,39 @@
+# macOS and editors
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+test-results/
+playwright-report/
+.netlify/
+blob-report/
+playwright/.auth/
+supabase/.branches/
+supabase/.temp/
+lib/supabase/database.types.generated.ts
+
+# Logs and caches
+*.log
+.cache/
+.turbo/
+.vite/
+*.tsbuildinfo
+
+# Reproducible local/CI security evidence
+artifacts/
+artifacts/security/*.json
+artifacts/security/*.sha256
+artifacts/security/*.tgz

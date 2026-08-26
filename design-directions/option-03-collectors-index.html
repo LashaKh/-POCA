@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Collector's Index, an exploratory visual direction for the ÉPOCA carpet shop.">
+  <title>ÉPOCA — Direction 03: Collector’s Index</title>
+  <link rel="stylesheet" href="shared.css">
+  <script src="shared.js" defer></script>
+</head>
+<body class="index-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="concept-note" aria-label="Concept navigation">
+    <p>Concept only — sample content &amp; prices</p>
+    <nav aria-label="Design directions">
+      <a href="index.html">All</a><span aria-hidden="true">/</span>
+      <a href="option-01-atelier-editorial.html">01</a>
+      <a href="option-02-gallery-monolith.html">02</a>
+      <a href="option-03-collectors-index.html" aria-current="page">03</a>
+      <a href="option-04-living-archive.html">04</a>
+    </nav>
+  </aside>
+
+  <header class="index-header">
+    <a class="brand" href="#main" aria-label="ÉPOCA home">ÉPOCA</a>
+    <form class="index-search" action="#catalog" role="search">
+      <label for="catalog-search">Search</label>
+      <input id="catalog-search" name="q" type="search" placeholder="Name, material, size…">
+    </form>
+    <nav aria-label="Primary">
+      <a href="#catalog">Index</a>
+      <a href="#editorial">About</a>
+      <a href="#concept-end">Bag · 0</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="catalog-intro" aria-labelledby="index-title">
+      <h1 id="index-title">Collector’s Index</h1>
+      <div class="catalog-intro__aside">
+        <span class="sample-label">Direction 03 · Product-first</span>
+        <p>A precise, curatorial catalog where every piece is easy to compare. Paper tones, hard rules, and restrained metadata make the product—not interface decoration—the visual event.</p>
+      </div>
+    </section>
+
+    <section id="catalog" aria-labelledby="catalog-title">
+      <div class="catalog-controls">
+        <div>
+          <h2 id="catalog-title" class="sample-label">Sample pieces</h2>
+          <div class="filter-list" aria-label="Filter sample pieces">
+            <button type="button" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" data-filter="warm" aria-pressed="false">Warm</button>
+            <button type="button" data-filter="cool" aria-pressed="false">Cool</button>
+          </div>
+        </div>
+        <span class="catalog-count">04 concept records</span>
+      </div>
+
+      <div class="catalog-grid">
+        <article class="catalog-card" data-collection="warm">
+          <a class="catalog-card__image" href="#concept-end" data-demo-action="Arda sample record selected">
+            <img src="assets/rug-red.webp" alt="Sample rust red carpet with an ornate pattern" width="1800" height="2400" loading="lazy">
+            <span class="catalog-card__tag">Sample</span>
+          </a>
+          <h2>Arda No. 01 <span>€1,240*</span></h2>
+          <p>Wool to verify · 190 × 280 cm · Record 001</p>
+        </article>
+        <article class="catalog-card" data-collection="warm">
+          <a class="catalog-card__image" href="#concept-end" data-demo-action="Neri sample record selected">
+            <img src="assets/rug-handmade.webp" alt="Sample handmade carpet with cream and rust ornament" width="1800" height="2718" loading="lazy">
+            <span class="catalog-card__tag">Sample</span>
+          </a>
+          <h2>Neri No. 02 <span>€980*</span></h2>
+          <p>Fiber to verify · 160 × 240 cm · Record 002</p>
+        </article>
+        <article class="catalog-card" data-collection="cool">
+          <a class="catalog-card__image" href="#concept-end" data-demo-action="Lale sample record selected">
+            <img src="assets/rug-indigo.webp" alt="Sample indigo carpet with a dense traditional pattern" width="1800" height="1224" loading="lazy">
+            <span class="catalog-card__tag">Sample</span>
+          </a>
+          <h2>Lale No. 03 <span>€1,480*</span></h2>
+          <p>Material to verify · 200 × 300 cm · Record 003</p>
+        </article>
+        <article class="catalog-card" data-collection="cool">
+          <a class="catalog-card__image" href="#concept-end" data-demo-action="Suna sample record selected">
+            <img src="assets/rug-dark.webp" alt="Sample dark carpet with detailed floral ornament" width="1800" height="2697" loading="lazy">
+            <span class="catalog-card__tag">Sample</span>
+          </a>
+          <h2>Suna No. 04 <span>€1,120*</span></h2>
+          <p>Material to verify · 180 × 270 cm · Record 004</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="editorial" class="index-feature" aria-labelledby="index-feature-title">
+      <div class="index-feature__copy">
+        <div>
+          <span class="sample-label">Catalog note 01</span>
+          <h2 id="index-feature-title">Clarity is part of the collection.</h2>
+        </div>
+        <p>This direction is strongest for a broad catalog: stable crops, dimensions, material, price, and availability can be scanned without losing an editorial point of view. All current values are placeholders.</p>
+      </div>
+      <img src="assets/rugs-stacked.webp" alt="Colorful patterned carpets stacked in a market" width="1800" height="2700" loading="lazy">
+    </section>
+  </main>
+
+  <footer id="concept-end">
+    <strong>ÉPOCA</strong>
+    <p>Direction 03 / Collector’s Index<br>Concept only · 2026</p>
+  </footer>
+  <div class="demo-status" role="status" aria-live="polite" data-demo-status></div>
+</body>
+</html>

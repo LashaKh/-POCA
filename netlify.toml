@@ -1,0 +1,125 @@
+[build]
+command = "npm run build"
+publish = ".next"
+
+[build.environment]
+NODE_VERSION = "24"
+NPM_VERSION = "11"
+NEXT_TELEMETRY_DISABLED = "1"
+
+[dev]
+command = "npm run dev"
+targetPort = 3000
+port = 8888
+framework = "#custom"
+
+[functions]
+directory = "netlify/functions"
+node_bundler = "esbuild"
+included_files = ["messages/**", "emails/**"]
+
+[functions."scheduled-coordinator"]
+timeout = 26
+
+[functions."media-worker"]
+timeout = 26
+
+[functions."export-worker"]
+timeout = 20
+
+[context.production.environment]
+DEPLOY_ENV = "production"
+PAYMENT_PROVIDER_MODE = "disabled"
+EMAIL_PROVIDER_MODE = "disabled"
+ASSISTANCE_PROVIDER_MODE = "disabled"
+ANALYTICS_PROVIDER_MODE = "disabled"
+MONITORING_PROVIDER_MODE = "disabled"
+
+[context.branch-deploy.environment]
+DEPLOY_ENV = "staging"
+PAYMENT_PROVIDER_MODE = "fixture"
+EMAIL_PROVIDER_MODE = "fixture"
+ASSISTANCE_PROVIDER_MODE = "disabled"
+ANALYTICS_PROVIDER_MODE = "disabled"
+MONITORING_PROVIDER_MODE = "fixture"
+
+[context.deploy-preview.environment]
+DEPLOY_ENV = "preview"
+PAYMENT_PROVIDER_MODE = "fixture"
+EMAIL_PROVIDER_MODE = "fixture"
+ASSISTANCE_PROVIDER_MODE = "disabled"
+ANALYTICS_PROVIDER_MODE = "disabled"
+MONITORING_PROVIDER_MODE = "fixture"
+
+[[headers]]
+for = "/*"
+
+  [headers.values]
+  X-Content-Type-Options = "nosniff"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  X-Frame-Options = "DENY"
+  Permissions-Policy = "camera=(), microphone=(), geolocation=(), usb=(), serial=(), hid=(), bluetooth=(), browsing-topics=()"
+  Cross-Origin-Opener-Policy = "same-origin"
+  Cross-Origin-Resource-Policy = "same-origin"
+  Origin-Agent-Cluster = "?1"
+  X-DNS-Prefetch-Control = "off"
+
+[[headers]]
+for = "/_next/static/*"
+
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/api/*"
+
+  [headers.values]
+  Cache-Control = "no-store"
+
+[[headers]]
+for = "/.netlify/functions/*"
+
+  [headers.values]
+  Cache-Control = "no-store"
+
+[[headers]]
+for = "/*/admin/*"
+
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/*/account/*"
+
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/*/auth/*"
+
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/*/checkout*"
+
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/*/order/*"
+
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+for = "/*/preview/*"
+
+  [headers.values]
+  Cache-Control = "private, no-store"
+  X-Robots-Tag = "noindex, nofollow"
