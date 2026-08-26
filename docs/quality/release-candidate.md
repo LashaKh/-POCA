@@ -2,7 +2,8 @@
 
 **Prepared:** 2026-08-26  
 **Candidate branch:** `001-build-production-shop`  
-**Current scope:** verified local candidate; managed deployment not attempted
+**Candidate commit:** `57494d03835b1e9a6ae6c2b1d8e23b62d81b0ec7`  
+**Current scope:** verified GitHub candidate; managed deployment not attempted
 
 ## Preserved evidence
 
@@ -19,10 +20,10 @@
 
 ## Promotion state
 
-No release tag, Netlify deploy ID or staging URL is recorded yet because the
-remote repository/site and managed staging backend have not been activated.
-Creating a tag before preserving an immutable remote commit and a deploy would
-overstate the candidate state.
+The candidate branch is pushed to GitHub. No release tag, Netlify deploy ID or
+staging URL is recorded yet because branch governance, the Netlify site and the
+managed staging backend have not been activated. Creating a release tag before
+review and a matching immutable deploy would overstate the candidate state.
 
 When those external inputs exist, the operator must:
 
