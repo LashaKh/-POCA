@@ -132,15 +132,16 @@ test("buyer language/currency, invalid discount, customs, manual quote, and staf
   await expect(
     page.getByText(/does not promise service, timing, customs treatment/i),
   ).toBeVisible();
-  await page.getByLabel("Email").fill(`world-${marker}@epoca.test`);
-  await page.getByLabel("Full name").fill("Worldwide Browser Buyer");
-  await page.getByLabel("Address line 1").fill("1 International Avenue");
-  await page.getByLabel("City").fill("New York");
-  await page.getByLabel("Two-letter country code").fill("US");
-  await page
+  const quoteForm = page.locator("form.checkout-form");
+  await quoteForm.getByLabel("Email").fill(`world-${marker}@epoca.test`);
+  await quoteForm.getByLabel("Full name").fill("Worldwide Browser Buyer");
+  await quoteForm.getByLabel("Address line 1").fill("1 International Avenue");
+  await quoteForm.getByLabel("City").fill("New York");
+  await quoteForm.getByLabel("Two-letter country code").fill("US");
+  await quoteForm
     .getByLabel("What should staff know? (optional)")
     .fill("Please price this route without assumptions.");
-  await page.getByRole("button", { name: "Request quote" }).click();
+  await quoteForm.getByRole("button", { name: "Request quote" }).click();
   await expect(
     page.getByRole("heading", { name: "Quote request received" }),
   ).toBeVisible();

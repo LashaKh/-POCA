@@ -80,13 +80,16 @@ test("guest completes fixture hosted payment with authoritative confirmation", a
   await page.getByRole("button", { name: "Add to cart" }).click();
   await page.getByRole("link", { name: "Cart (1)" }).click();
   await page.getByRole("button", { name: "Review exact total" }).click();
-  await page.getByLabel("Email").fill(`hosted-${unique}@example.test`);
-  await page.getByLabel("Full name").fill("Hosted Payment Buyer");
-  await page.getByLabel("Address line 1").fill("1 Provider Street");
-  await page.getByLabel("City").fill("Tbilisi");
-  await page.getByLabel("Pay securely online", { exact: false }).check();
-  await page.getByLabel("I accept the store terms and return policy.").check();
-  await page.getByRole("button", { name: "Place order" }).click();
+  const checkout = page.locator("form.checkout-form");
+  await checkout.getByLabel("Email").fill(`hosted-${unique}@example.test`);
+  await checkout.getByLabel("Full name").fill("Hosted Payment Buyer");
+  await checkout.getByLabel("Address line 1").fill("1 Provider Street");
+  await checkout.getByLabel("City").fill("Tbilisi");
+  await checkout.getByLabel("Pay securely online", { exact: false }).check();
+  await checkout
+    .getByLabel("I accept the store terms and return policy.")
+    .check();
+  await checkout.getByRole("button", { name: "Place order" }).click();
 
   await expect(page).toHaveURL(
     /\/en\/payment\/return\?reference=EPO-[A-Z0-9]{12}$/,

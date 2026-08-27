@@ -66,14 +66,15 @@ test("stale price fails closed and cancelled checkout recovers to cart", async (
       .eq("id", price.id);
     expect(changed.error).toBeNull();
 
-    await page.getByLabel("Email").fill("stale-browser@example.test");
-    await page.getByLabel("Full name").fill("Synthetic Stale Buyer");
-    await page.getByLabel("Address line 1").fill("3 Test Street");
-    await page.getByLabel("City").fill("Tbilisi");
-    await page
+    const checkout = page.locator("form.checkout-form");
+    await checkout.getByLabel("Email").fill("stale-browser@example.test");
+    await checkout.getByLabel("Full name").fill("Synthetic Stale Buyer");
+    await checkout.getByLabel("Address line 1").fill("3 Test Street");
+    await checkout.getByLabel("City").fill("Tbilisi");
+    await checkout
       .getByLabel("I accept the store terms and return policy.")
       .check();
-    await page.getByRole("button", { name: "Place order" }).click();
+    await checkout.getByRole("button", { name: "Place order" }).click();
     await expect(page).toHaveURL(/error=CHECKOUT_STALE/);
     await expect(page.locator(".notice-error")).toContainText(
       "could not safely complete",

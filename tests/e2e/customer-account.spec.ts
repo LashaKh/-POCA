@@ -88,13 +88,18 @@ test("anonymous wishlist becomes a secure customer account with orders, addresse
   await page.getByRole("button", { name: "Add to cart" }).click();
   await page.getByRole("link", { name: "Cart (1)" }).click();
   await page.getByRole("button", { name: "Review exact total" }).click();
-  await expect(page.getByLabel("Email")).toHaveValue(email);
-  await expect(page.getByLabel("Full name")).toHaveValue("Browser Collector");
-  await expect(page.getByLabel("Address line 1")).toHaveValue(
+  const checkout = page.locator("form.checkout-form");
+  await expect(checkout.getByLabel("Email")).toHaveValue(email);
+  await expect(checkout.getByLabel("Full name")).toHaveValue(
+    "Browser Collector",
+  );
+  await expect(checkout.getByLabel("Address line 1")).toHaveValue(
     "7 Collector Street",
   );
-  await page.getByLabel("I accept the store terms and return policy.").check();
-  await page.getByRole("button", { name: "Place order" }).click();
+  await checkout
+    .getByLabel("I accept the store terms and return policy.")
+    .check();
+  await checkout.getByRole("button", { name: "Place order" }).click();
   await expect(page).toHaveURL(/\/en\/order\/EPO-[A-Z0-9]{12}$/);
   const reference = (await page.getByText(/Order reference:/).innerText())
     .split(" ")
