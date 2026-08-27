@@ -132,6 +132,7 @@ test("guest cart persists and accepts one recoverable bank-transfer order", asyn
 
   await page.reload();
   await expect(page.getByRole("heading", { name: "Thank you." })).toBeVisible();
+  await page.locator("details.site-navigation-drawer > summary").click();
   await page.getByRole("link", { name: "Deutsch", exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/de/order/${reference}$`));
   await expect(
