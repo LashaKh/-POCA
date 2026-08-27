@@ -1155,14 +1155,12 @@ textarea {
 
 @keyframes archive-word-in {
   from {
-    opacity: 0;
     transform: translateY(110%);
   }
 }
 
 @keyframes archive-rise {
   from {
-    opacity: 0;
     transform: translateY(0.5rem);
   }
 }

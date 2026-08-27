@@ -75,7 +75,10 @@ export async function SiteHeader({
           />
           <button type="submit">{catalog("search")}</button>
         </form>
-        <nav className="site-commerce-navigation" aria-label={t("account")}>
+        <nav
+          className="site-commerce-navigation"
+          aria-label={t("commerceNavigation")}
+        >
           <Link href="/account" locale={locale} aria-label={t("account")}>
             <AccountIcon className="commerce-icon" />
             <span className="commerce-link-label">{t("account")}</span>

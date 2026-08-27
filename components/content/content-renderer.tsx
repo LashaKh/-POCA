@@ -32,13 +32,13 @@ export function ContentRenderer({ blocks }: { blocks: ContentBlock[] }) {
           );
         }
         return (
-          <aside
+          <section
             className={`content-callout content-callout-${block.tone}`}
             key={key}
           >
             {block.title ? <h3>{block.title}</h3> : null}
             <p>{block.text}</p>
-          </aside>
+          </section>
         );
       })}
     </div>

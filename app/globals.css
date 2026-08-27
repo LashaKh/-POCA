@@ -1588,13 +1588,15 @@ textarea[aria-invalid="true"] {
 }
 
 .admin-main h1,
-.system-state h1 {
+.system-state h1,
+.system-state-title {
   max-width: 18ch;
   margin: var(--space-3) 0 var(--space-6);
   font-family:
     var(--font-latin-cyrillic-display-loaded), var(--font-display-loaded),
     var(--font-display);
   font-size: clamp(2.25rem, 6vw, 5rem);
+  font-weight: 700;
   line-height: 1;
   overflow-wrap: anywhere;
 }
