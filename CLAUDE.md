@@ -65,6 +65,7 @@ Feature artifacts belong in `specs/NNN-feature-name/`. Keep the responsibilities
 Lead with what changed and why it matters. Keep explanations concise, teach without lecturing, and use a short real-world analogy when it makes a complex decision easier to understand.
 
 ## Active Technologies
+
 - TypeScript 6.0.x strict mode; SQL/PostgreSQL migrations; Node.js 24 LTS + Next.js 16.3.2 App Router, React 19.2, Supabase JS/SSR 2.112.4, next-intl 4.13.7, Zod 4.4.3 (002-google-discovery)
 - Existing Supabase Postgres catalog/content tables and approved public media renditions; no new external store (002-google-discovery)
 

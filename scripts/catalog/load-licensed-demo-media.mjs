@@ -203,9 +203,13 @@ async function requireData(promise, label) {
 }
 
 const environment = targetEnvironment();
-const service = createClient(environment.API_URL, environment.SERVICE_ROLE_KEY, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
+const service = createClient(
+  environment.API_URL,
+  environment.SERVICE_ROLE_KEY,
+  {
+    auth: { persistSession: false, autoRefreshToken: false },
+  },
+);
 
 async function ensureManagedDemoCatalog() {
   if (!environment.managed) return;
@@ -227,10 +231,19 @@ async function ensureManagedDemoCatalog() {
   );
 
   const collectionNames = {
-    ka: ["ლიცენზირებული დემო კოლექცია", "მხოლოდ ინტერფეისის დემონსტრაციისთვის."],
+    ka: [
+      "ლიცენზირებული დემო კოლექცია",
+      "მხოლოდ ინტერფეისის დემონსტრაციისთვის.",
+    ],
     en: ["Licensed Demo Collection", "For interface demonstration only."],
-    de: ["Lizenzierte Demo-Kollektion", "Nur zur Demonstration der Oberfläche."],
-    ru: ["Лицензированная демо-коллекция", "Только для демонстрации интерфейса."],
+    de: [
+      "Lizenzierte Demo-Kollektion",
+      "Nur zur Demonstration der Oberfläche.",
+    ],
+    ru: [
+      "Лицензированная демо-коллекция",
+      "Только для демонстрации интерфейса.",
+    ],
   };
   await requireData(
     service.from("collection_translations").upsert(
@@ -274,7 +287,9 @@ async function ensureManagedDemoCatalog() {
     "Create managed demo products",
   );
 
-  const productBySku = new Map(products.map((product) => [product.sku, product]));
+  const productBySku = new Map(
+    products.map((product) => [product.sku, product]),
+  );
   await requireData(
     service.from("product_translations").upsert(
       records.flatMap((record) => {
