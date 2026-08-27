@@ -95,6 +95,8 @@ export async function getGuestOrder(reference: string, locale: AppLocale) {
 export async function getViewerOrder(reference: string, locale: AppLocale) {
   if (!/^EPO-[A-Z0-9]{12}$/.test(reference)) return undefined;
   const client = await createServerSupabaseClient();
+  const { data: authentication } = await client.auth.getUser();
+  if (!authentication.user) return getGuestOrder(reference, locale);
   const { data: order, error } = await client
     .from("orders")
     .select("*")
