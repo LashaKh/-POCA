@@ -10,6 +10,7 @@ import {
 
 import "./globals.css";
 import "./storefront-polish.css";
+import "./storefront-density.css";
 
 import { defaultLocale, isAppLocale } from "@/i18n/routing";
 

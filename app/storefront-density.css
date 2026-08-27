@@ -1,0 +1,305 @@
+/*
+ * Collector's Index density pass.
+ *
+ * Keep utility copy and controls at their accessible sizes while reducing the
+ * oversized display type, whitespace, and media stages that made the
+ * storefront feel browser-zoomed on ordinary screens.
+ */
+
+@media (min-width: 64.0625rem) {
+  .site-frame {
+    --storefront-gutter: clamp(var(--space-6), 3.2vw, var(--space-12));
+  }
+
+  .site-header-main {
+    gap: clamp(var(--space-5), 2.4vw, var(--space-8));
+    min-height: 4.75rem;
+    padding-inline: var(--storefront-gutter);
+  }
+
+  .site-header-bar {
+    min-height: 3rem;
+    padding-inline: var(--storefront-gutter);
+  }
+
+  .brand {
+    font-size: clamp(1.5rem, 2vw, 2rem);
+  }
+
+  .catalog-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 1fr);
+    min-height: min(40rem, calc(100svh - 7.75rem));
+  }
+
+  .catalog-hero-copy {
+    padding-block: clamp(var(--space-10), 4.5vw, 4.5rem);
+  }
+
+  .catalog-hero h1 {
+    max-width: 11.5ch;
+    margin-block: var(--space-4) var(--space-6);
+    font-size: clamp(3rem, 5.4vw, 5.25rem);
+    line-height: 0.92;
+  }
+
+  .catalog-hero-actions {
+    margin-top: clamp(var(--space-6), 3.5vw, var(--space-10));
+  }
+
+  .catalog-hero-media,
+  .catalog-hero-media :is(img, .media-fallback) {
+    min-height: 26rem;
+  }
+
+  .home-editorial {
+    gap: clamp(var(--space-8), 6vw, 7rem);
+    padding-block: clamp(var(--space-10), 5.5vw, 5rem);
+  }
+
+  .home-editorial .content-body h2 {
+    font-size: clamp(2.1rem, 3.8vw, 3.75rem);
+  }
+
+  .catalog-section,
+  .home-service-index,
+  .related-products {
+    padding-block: clamp(var(--space-10), 4.5vw, 4.5rem);
+  }
+
+  .catalog-section-heading h2,
+  .home-service-heading h2 {
+    font-size: clamp(2.5rem, 4.4vw, 4.5rem);
+  }
+
+  .home-service-heading {
+    margin-bottom: var(--space-8);
+  }
+
+  .home-service-card {
+    min-height: 18rem;
+    padding: var(--space-6);
+  }
+
+  .catalog-page-header {
+    padding-block: clamp(var(--space-10), 4.8vw, 4.5rem);
+  }
+
+  .catalog-page-header::after {
+    bottom: -3.5rem;
+    font-size: clamp(7rem, 15vw, 13rem);
+  }
+
+  .catalog-page-header h1,
+  .service-page:not(.journal-page) > header h1,
+  .commerce-header h1 {
+    font-size: clamp(3rem, 5.2vw, 5rem);
+  }
+
+  .catalog-controls {
+    padding-block: var(--space-5);
+    margin-bottom: var(--space-6);
+  }
+
+  .product-gallery-stage {
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+
+  .product-record {
+    padding-block: clamp(var(--space-8), 4vw, 3.75rem);
+  }
+
+  .product-record h1 {
+    font-size: clamp(2.75rem, 4.35vw, 4.5rem);
+  }
+
+  .product-price {
+    font-size: clamp(1.5rem, 2vw, 2rem);
+  }
+
+  .related-products > h2 {
+    font-size: clamp(2.5rem, 4.4vw, 4.5rem);
+  }
+
+  .service-page:not(.journal-page) {
+    padding-bottom: clamp(var(--space-10), 4.5vw, 4.5rem);
+  }
+
+  .service-page:not(.journal-page) > header {
+    column-gap: clamp(var(--space-8), 5vw, 6rem);
+    padding-block: clamp(var(--space-10), 4.8vw, 4.5rem);
+  }
+
+  .service-page:not(.journal-page) > .content-body {
+    padding-top: clamp(var(--space-8), 4vw, 3.75rem);
+  }
+
+  .commerce-page {
+    padding-block: clamp(var(--space-8), 4vw, 3.75rem);
+  }
+
+  .journal-hero {
+    gap: clamp(var(--space-8), 4vw, 4.5rem);
+    padding-block: clamp(var(--space-12), 5vw, 5rem);
+  }
+
+  .journal-page .journal-hero h1 {
+    font-size: clamp(4rem, 8vw, 7.5rem);
+  }
+
+  .journal-empty {
+    min-height: 24rem;
+  }
+
+  .journal-empty-number {
+    font-size: clamp(6rem, 14vw, 12rem);
+  }
+
+  .journal-empty-copy {
+    padding: clamp(var(--space-8), 5vw, 5rem);
+  }
+
+  .newsletter-panel {
+    gap: clamp(var(--space-8), 5vw, 5rem);
+    padding-block: clamp(var(--space-10), 4vw, 3.75rem);
+    padding-inline: var(--storefront-gutter);
+  }
+
+  .newsletter-copy h2 {
+    font-size: clamp(2.25rem, 3.5vw, 3.5rem);
+  }
+
+  .site-footer {
+    gap: clamp(var(--space-8), 4vw, 4.5rem);
+    padding: clamp(var(--space-10), 4vw, 3.75rem) var(--storefront-gutter)
+      var(--space-6);
+  }
+
+  .footer-identity {
+    gap: var(--space-6);
+  }
+
+  .footer-wordmark {
+    font-size: clamp(4rem, 7.5vw, 7rem);
+  }
+}
+
+@media (min-width: 30.0625rem) and (max-width: 64rem) {
+  .site-frame {
+    --storefront-gutter: clamp(var(--space-5), 3.5vw, var(--space-8));
+  }
+
+  .catalog-hero-copy {
+    min-height: 24rem;
+    padding-block: var(--space-10);
+  }
+
+  .catalog-hero h1 {
+    font-size: clamp(3rem, 7vw, 4.25rem);
+  }
+
+  .catalog-hero-media,
+  .catalog-hero-media :is(img, .media-fallback) {
+    min-height: 22rem;
+  }
+
+  .catalog-section,
+  .home-editorial,
+  .home-service-index,
+  .related-products {
+    padding-block: var(--space-10);
+  }
+
+  .catalog-section-heading h2,
+  .home-service-heading h2,
+  .related-products > h2 {
+    font-size: clamp(2.5rem, 7vw, 4rem);
+  }
+
+  .catalog-page-header,
+  .service-page:not(.journal-page) > header,
+  .commerce-page,
+  .newsletter-panel,
+  .site-footer {
+    padding-block: var(--space-10);
+  }
+
+  .catalog-page-header h1,
+  .service-page:not(.journal-page) > header h1,
+  .commerce-header h1 {
+    font-size: clamp(3rem, 8vw, 4.5rem);
+  }
+
+  .product-record {
+    padding-block: var(--space-10);
+  }
+
+  .journal-hero {
+    padding-block: var(--space-12);
+  }
+
+  .journal-page .journal-hero h1 {
+    font-size: clamp(4rem, 10vw, 6rem);
+  }
+
+  .journal-empty-copy {
+    padding: var(--space-10);
+  }
+
+  .footer-wordmark {
+    font-size: clamp(4rem, 10vw, 6rem);
+  }
+}
+
+@media (min-width: 42rem) and (max-width: 64rem) {
+  .product-page {
+    grid-template-columns: minmax(0, 0.95fr) minmax(20rem, 1.05fr);
+  }
+
+  .product-record {
+    padding-inline: var(--storefront-gutter);
+    border-top: 0;
+    border-left: var(--rule);
+  }
+
+  .product-record h1 {
+    font-size: clamp(2.75rem, 6vw, 3.75rem);
+  }
+}
+
+@media (max-width: 30rem) {
+  .catalog-hero-copy {
+    min-height: 25rem;
+    padding-block: var(--space-10);
+  }
+
+  .catalog-hero-media,
+  .catalog-hero-media :is(img, .media-fallback) {
+    min-height: 22rem;
+  }
+
+  .catalog-section,
+  .home-editorial,
+  .home-service-index,
+  .related-products,
+  .catalog-page-header,
+  .service-page:not(.journal-page) > header,
+  .commerce-page,
+  .newsletter-panel,
+  .site-footer {
+    padding-block: var(--space-8);
+  }
+
+  .product-record {
+    padding-block: var(--space-8);
+  }
+
+  .journal-hero {
+    padding-block: var(--space-10);
+  }
+
+  .journal-page .journal-hero h1,
+  .footer-wordmark {
+    font-size: clamp(3.75rem, 18vw, 5rem);
+  }
+}
