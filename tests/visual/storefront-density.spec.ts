@@ -49,6 +49,9 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
           );
           const footerWordmark =
             document.querySelector<HTMLElement>(".footer-wordmark");
+          const nextHomeSection = document.querySelector<HTMLElement>(
+            ".catalog-notice, .catalog-section",
+          );
 
           return {
             overflow:
@@ -68,6 +71,8 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
             footerWordmarkSize: footerWordmark
               ? Number.parseFloat(getComputedStyle(footerWordmark).fontSize)
               : 0,
+            nextHomeSectionTop:
+              nextHomeSection?.getBoundingClientRect().top ?? 0,
             desktop,
           };
         },
@@ -76,20 +81,21 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
 
       expect(composition.overflow).toBeLessThanOrEqual(1);
       expect(composition.headerHeight).toBeLessThanOrEqual(
-        viewport.width >= 1025 ? 140 : 320,
+        viewport.width >= 1025 ? 116 : 320,
       );
       expect(composition.headingSize).toBeLessThanOrEqual(
         viewport.width >= 1025 ? 120 : 80,
       );
 
       if (route.label === "home" && composition.desktop) {
-        expect(composition.heroHeight).toBeLessThanOrEqual(650);
-        expect(composition.headingSize).toBeLessThanOrEqual(84);
+        expect(composition.heroHeight).toBeLessThanOrEqual(520);
+        expect(composition.headingSize).toBeLessThanOrEqual(66);
+        expect(composition.nextHomeSectionTop).toBeLessThanOrEqual(650);
       }
 
       if (route.label === "product" && composition.desktop) {
-        expect(composition.productStageWidth).toBeLessThanOrEqual(576);
-        expect(composition.headingSize).toBeLessThanOrEqual(72);
+        expect(composition.productStageWidth).toBeLessThanOrEqual(480);
+        expect(composition.headingSize).toBeLessThanOrEqual(58);
       }
 
       if (route.label === "product" && viewport.label === "tablet") {
@@ -99,7 +105,7 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
       }
 
       if (route.label === "journal" && composition.desktop) {
-        expect(composition.footerWordmarkSize).toBeLessThanOrEqual(112);
+        expect(composition.footerWordmarkSize).toBeLessThanOrEqual(90);
       }
 
       await page.screenshot({
@@ -112,26 +118,42 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
     }
   }
 
-  await page.setViewportSize(viewports[2]);
-  await page.goto("/en/products/syn-00004");
-  await page.locator(".site-footer-wrapper").scrollIntoViewIfNeeded();
-  const footerDensity = await page.evaluate(() => ({
-    newsletterHeight:
-      document
-        .querySelector<HTMLElement>(".newsletter-panel")
-        ?.getBoundingClientRect().height ?? 0,
-    footerHeight:
-      document
-        .querySelector<HTMLElement>(".site-footer")
-        ?.getBoundingClientRect().height ?? 0,
-  }));
-  expect(footerDensity.newsletterHeight).toBeLessThanOrEqual(480);
-  expect(footerDensity.footerHeight).toBeLessThanOrEqual(380);
-  await page.screenshot({
-    path: testInfo.outputPath("density-desktop-footer.png"),
-    animations: "disabled",
-    fullPage: false,
-  });
+  const newsletterHeightBudgets = {
+    phone: 520,
+    tablet: 420,
+    desktop: 280,
+  } as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    await page.goto("/en/products/syn-00004");
+    await page.locator(".site-footer-wrapper").scrollIntoViewIfNeeded();
+    const footerDensity = await page.evaluate(() => ({
+      newsletterHeight:
+        document
+          .querySelector<HTMLElement>(".newsletter-panel")
+          ?.getBoundingClientRect().height ?? 0,
+      footerHeight:
+        document
+          .querySelector<HTMLElement>(".site-footer")
+          ?.getBoundingClientRect().height ?? 0,
+    }));
+    expect(footerDensity.newsletterHeight).toBeLessThanOrEqual(
+      newsletterHeightBudgets[viewport.label],
+    );
+    if (viewport.label === "desktop") {
+      expect(footerDensity.footerHeight).toBeLessThanOrEqual(300);
+    }
+    await page.evaluate(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    });
+    await page.locator(".site-footer-wrapper").screenshot({
+      path: testInfo.outputPath(`density-${viewport.label}-footer.png`),
+      animations: "disabled",
+    });
+  }
 
   await page.setViewportSize(viewports[0]);
   await page.goto("/en");
