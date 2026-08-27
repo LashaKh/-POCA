@@ -8,6 +8,7 @@ import {
   localServiceClient,
   signInStaff,
 } from "@/tests/support/admin-access";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject: Record<string, AppLocale> = {
   "phone-390-ka": "ka",
@@ -39,6 +40,7 @@ test("Owner auth, settings, and audit remain accessible and responsive", async (
     await expect(
       page.getByRole("heading", { name: "We could not load this page." }),
     ).toHaveCount(0);
+    await waitForCompletedRoute(page);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
     const overflowing = await page.evaluate(() => {

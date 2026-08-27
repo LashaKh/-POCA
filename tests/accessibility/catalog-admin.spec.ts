@@ -8,6 +8,7 @@ import {
   createManager,
   localEnvironment,
 } from "@/tests/support/order-operations";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject: Record<string, AppLocale> = {
   "phone-390-ka": "ka",
@@ -94,7 +95,7 @@ test("catalog administration has two accessible responsive passes", async ({
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/en\/admin\/products$/);
     await page.goto(`/${locale}/admin/products?query=${marker}`);
-    await expect(page.locator("main h1")).toBeVisible();
+    await waitForCompletedRoute(page);
     await expect(page.locator("tbody tr")).toHaveCount(8);
 
     const firstPass = await page.evaluate(() => ({

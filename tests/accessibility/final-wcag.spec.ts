@@ -7,6 +7,7 @@ import {
   localServiceClient,
   signInStaff,
 } from "@/tests/support/admin-access";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject: Record<string, AppLocale> = {
   "phone-390-ka": "ka",
@@ -39,7 +40,7 @@ const adminRoutes = [
 async function expectAccessiblePage(page: Page, pathName: string) {
   const response = await page.goto(pathName, { waitUntil: "domcontentloaded" });
   expect(response?.status(), pathName).toBeLessThan(400);
-  await expect(page.locator("main h1").first()).toBeVisible();
+  await waitForCompletedRoute(page);
   const result = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();

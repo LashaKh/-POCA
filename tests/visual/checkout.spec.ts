@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
+
 const scenarios = {
   "phone-390-ka": { locale: "ka", slug: "syn-01002" },
   "tablet-768-en": { locale: "en", slug: "syn-01003" },
@@ -21,7 +23,7 @@ test("checkout review is responsive, localized, and accessible", async ({
   await expect(page).toHaveURL(
     new RegExp(`/${scenario.locale}/checkout\\?session=`),
   );
-  await expect(page.locator("main h1")).toBeVisible();
+  await waitForCompletedRoute(page);
   expect(
     await page.evaluate(
       () =>

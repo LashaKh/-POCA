@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
+
 const projectLocale = {
   "phone-390-ka": "ka",
   "tablet-768-en": "en",
@@ -15,7 +17,7 @@ test("localized collection paths and breadcrumbs stay accessible and responsive"
   const locale =
     projectLocale[testInfo.project.name as keyof typeof projectLocale];
   await page.goto(`/${locale}/collections`);
-  await expect(page.locator("main h1")).toBeVisible();
+  await waitForCompletedRoute(page);
   await expect(page.locator("main .breadcrumbs")).toBeVisible();
   expect(
     await page.evaluate(

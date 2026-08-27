@@ -7,6 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import { expect, test } from "@playwright/test";
 
 import type { Database } from "@/lib/supabase/database.types";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject = {
   "phone-390-ka": "ka",
@@ -94,7 +95,7 @@ test("ingestion review has two clean responsive accessibility passes", async ({
     await expect(page).toHaveURL(
       new RegExp(`/${locale}/admin/ingestion/${batch.id}/review$`),
     );
-    await expect(page.locator("main h1")).toBeVisible();
+    await waitForCompletedRoute(page);
     expect(
       await page.evaluate(
         () =>

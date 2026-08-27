@@ -9,6 +9,7 @@ import {
   localServiceClient,
   signInStaff,
 } from "@/tests/support/admin-access";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const locales = ["ka", "en", "de", "ru"] as const;
 const viewports = [
@@ -92,7 +93,7 @@ test("all critical routes complete the final four-locale responsive review", asy
       waitUntil: "load",
     });
     expect(response?.status(), `${locale}${route.path}`).toBeLessThan(400);
-    await expect(page.locator("main h1").first()).toBeVisible();
+    await waitForCompletedRoute(page);
     if (route.label !== "sign-in") {
       await expect(
         page.locator("main.system-state"),

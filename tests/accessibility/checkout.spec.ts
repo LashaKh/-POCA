@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
+
 test("empty cart remains usable at each configured viewport and locale", async ({
   page,
 }, testInfo) => {
@@ -12,7 +14,7 @@ test("empty cart remains usable at each configured viewport and locale", async (
         ? "ru"
         : "en";
   await page.goto(`/${locale}/cart`);
-  await expect(page.locator("main h1")).toBeVisible();
+  await waitForCompletedRoute(page);
   expect(
     await page.evaluate(
       () =>

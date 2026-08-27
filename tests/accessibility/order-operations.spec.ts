@@ -10,6 +10,7 @@ import {
   localEnvironment,
   signInManager,
 } from "@/tests/support/order-operations";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject: Record<string, AppLocale> = {
   "phone-390-ka": "ka",
@@ -50,7 +51,7 @@ test("order operations remain accessible across locales and viewports", async ({
   try {
     await signInManager(page, order.id, manager);
     await page.goto(`/${locale}/admin/orders/${order.id}`);
-    await expect(page.locator("main h1")).toBeVisible();
+    await waitForCompletedRoute(page);
 
     const layout = await page.evaluate(() => ({
       overflow:

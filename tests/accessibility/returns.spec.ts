@@ -11,6 +11,7 @@ import {
   createManager,
   localEnvironment,
 } from "@/tests/support/order-operations";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject: Record<string, AppLocale> = {
   "phone-390-ka": "ka",
@@ -60,7 +61,7 @@ async function deliverOrder(
 
 async function expectAccessibleResponsiveSurface(page: Page, path: string) {
   await page.goto(path);
-  await expect(page.locator("main h1")).toBeVisible();
+  await waitForCompletedRoute(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   const layout = await page.evaluate(() => ({
     overflow:

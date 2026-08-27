@@ -5,6 +5,7 @@ import { expect, test, type Page } from "@playwright/test";
 import type { AppLocale } from "@/i18n/routing";
 import type { Database } from "@/lib/supabase/database.types";
 import { localEnvironment } from "@/tests/support/order-operations";
+import { waitForCompletedRoute } from "@/tests/support/playwright-route";
 
 const localeByProject: Record<string, AppLocale> = {
   "phone-390-ka": "ka",
@@ -16,7 +17,7 @@ const localeByProject: Record<string, AppLocale> = {
 
 async function expectAccessibleResponsiveSurface(page: Page, path: string) {
   await page.goto(path);
-  await expect(page.locator("main h1")).toBeVisible();
+  await waitForCompletedRoute(page);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(
     await page.evaluate(
