@@ -119,9 +119,14 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
   }
 
   const newsletterHeightBudgets = {
-    phone: 520,
-    tablet: 420,
-    desktop: 280,
+    phone: 340,
+    tablet: 260,
+    desktop: 180,
+  } as const;
+  const openNewsletterHeightBudgets = {
+    phone: 400,
+    tablet: 330,
+    desktop: 240,
   } as const;
 
   for (const viewport of viewports) {
@@ -137,12 +142,17 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
         document
           .querySelector<HTMLElement>(".site-footer")
           ?.getBoundingClientRect().height ?? 0,
+      signupWidth:
+        document
+          .querySelector<HTMLElement>(".newsletter-panel > .newsletter-form")
+          ?.getBoundingClientRect().width ?? 0,
     }));
     expect(footerDensity.newsletterHeight).toBeLessThanOrEqual(
       newsletterHeightBudgets[viewport.label],
     );
     if (viewport.label === "desktop") {
       expect(footerDensity.footerHeight).toBeLessThanOrEqual(300);
+      expect(footerDensity.signupWidth).toBeLessThanOrEqual(480);
     }
     await page.evaluate(() => {
       if (document.activeElement instanceof HTMLElement) {
@@ -151,6 +161,23 @@ test("storefront keeps an editorial rather than browser-zoomed density", async (
     });
     await page.locator(".site-footer-wrapper").screenshot({
       path: testInfo.outputPath(`density-${viewport.label}-footer.png`),
+      animations: "disabled",
+    });
+
+    await page.locator(".newsletter-withdrawal summary").click();
+    const openNewsletterHeight = await page
+      .locator(".newsletter-panel")
+      .evaluate((panel) => panel.getBoundingClientRect().height);
+    expect(openNewsletterHeight).toBeLessThanOrEqual(
+      openNewsletterHeightBudgets[viewport.label],
+    );
+    await page.evaluate(() => {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+    });
+    await page.locator(".site-footer-wrapper").screenshot({
+      path: testInfo.outputPath(`density-${viewport.label}-footer-open.png`),
       animations: "disabled",
     });
   }

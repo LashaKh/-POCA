@@ -6,6 +6,80 @@
  * storefront feel browser-zoomed on ordinary screens.
  */
 
+.site-footer-wrapper {
+  border-top: 0;
+}
+
+.newsletter-panel {
+  border-top: 0.25rem solid var(--color-accent);
+  border-bottom: var(--rule);
+  background: var(--color-surface-subtle);
+  color: var(--color-ink);
+}
+
+.newsletter-copy .eyebrow {
+  color: var(--color-accent);
+  font-size: 0.625rem;
+}
+
+.newsletter-copy h2 {
+  max-width: none;
+  margin-block: var(--space-1) var(--space-2);
+  font-size: clamp(1.5rem, 2vw, 1.875rem);
+  line-height: 1;
+}
+
+.newsletter-copy > p:not(.eyebrow) {
+  max-width: 48ch;
+  margin-block: var(--space-1) 0;
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.newsletter-form,
+.newsletter-withdrawal {
+  width: min(100%, 30rem);
+  max-width: 30rem;
+}
+
+.newsletter-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2);
+}
+
+.newsletter-form input {
+  border-bottom-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.newsletter-form button {
+  padding-inline: var(--space-5);
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.newsletter-form [role="status"]:empty {
+  display: none;
+}
+
+.newsletter-withdrawal {
+  border-top: 0;
+}
+
+.newsletter-withdrawal summary {
+  justify-content: flex-start;
+  width: fit-content;
+  color: var(--color-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.22em;
+}
+
+.newsletter-withdrawal[open] summary {
+  margin-bottom: var(--space-2);
+}
+
 @media (min-width: 64.0625rem) {
   .site-frame {
     --storefront-gutter: clamp(var(--space-5), 2.6vw, var(--space-10));
@@ -167,36 +241,21 @@
   }
 
   .newsletter-panel {
-    grid-template-columns: minmax(15rem, 0.65fr) minmax(28rem, 1.35fr);
+    grid-template-columns: minmax(18rem, 1fr) minmax(24rem, 30rem);
     column-gap: clamp(var(--space-8), 4vw, 4rem);
-    row-gap: var(--space-3);
-    padding: var(--space-8) var(--storefront-gutter);
+    row-gap: 0;
+    align-items: center;
+    padding: var(--space-5) var(--storefront-gutter);
   }
 
   .newsletter-copy {
     grid-row: 1 / 3;
   }
 
-  .newsletter-copy h2 {
-    max-width: none;
-    margin-block: var(--space-2) var(--space-3);
-    font-size: clamp(2rem, 2.6vw, 2.5rem);
-  }
-
-  .newsletter-copy > p:not(.eyebrow) {
-    margin-top: var(--space-2);
-  }
-
-  .newsletter-form {
-    gap: var(--space-3);
-  }
-
-  .newsletter-form [role="status"]:empty {
-    display: none;
-  }
-
+  .newsletter-panel > .newsletter-form,
   .newsletter-withdrawal {
-    margin-top: 0;
+    grid-column: 2;
+    justify-self: end;
   }
 
   .site-footer {
@@ -278,16 +337,17 @@
   }
 
   .newsletter-panel {
-    gap: var(--space-5);
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--storefront-gutter);
   }
 
-  .newsletter-copy h2 {
-    max-width: none;
-    font-size: clamp(2rem, 6vw, 3rem);
-  }
-
-  .newsletter-form [role="status"]:empty {
-    display: none;
+  .newsletter-copy,
+  .newsletter-panel > .newsletter-form,
+  .newsletter-withdrawal {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
   }
 
   .footer-wordmark {
@@ -296,6 +356,24 @@
 }
 
 @media (min-width: 42rem) and (max-width: 64rem) {
+  .newsletter-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 26rem);
+    column-gap: var(--space-6);
+    row-gap: 0;
+    align-items: center;
+  }
+
+  .newsletter-copy {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .newsletter-panel > .newsletter-form,
+  .newsletter-withdrawal {
+    grid-column: 2;
+    justify-self: end;
+  }
+
   .product-page {
     grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
   }
@@ -336,16 +414,17 @@
   }
 
   .newsletter-panel {
-    gap: var(--space-5);
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-4);
   }
 
-  .newsletter-copy h2 {
-    max-width: none;
-    font-size: clamp(2rem, 11vw, 2.75rem);
-  }
-
-  .newsletter-form [role="status"]:empty {
-    display: none;
+  .newsletter-copy,
+  .newsletter-panel > .newsletter-form,
+  .newsletter-withdrawal {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
   }
 
   .product-record {
