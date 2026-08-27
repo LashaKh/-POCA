@@ -28,7 +28,8 @@
 
   .catalog-hero {
     grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
-    min-height: 31rem;
+    height: 31rem;
+    min-height: 0;
   }
 
   .catalog-hero-copy {
@@ -46,9 +47,15 @@
     margin-top: var(--space-5);
   }
 
+  .catalog-hero-record,
   .catalog-hero-media,
   .catalog-hero-media :is(img, .media-fallback) {
-    min-height: 22rem;
+    min-height: 0;
+  }
+
+  .catalog-hero-media,
+  .catalog-hero-media :is(img, .media-fallback) {
+    height: 100%;
   }
 
   .home-editorial {
@@ -223,7 +230,8 @@
 
   .catalog-hero-media,
   .catalog-hero-media :is(img, .media-fallback) {
-    min-height: 18rem;
+    height: 18rem;
+    min-height: 0;
   }
 
   .catalog-section,
@@ -311,7 +319,8 @@
 
   .catalog-hero-media,
   .catalog-hero-media :is(img, .media-fallback) {
-    min-height: 19rem;
+    height: 19rem;
+    min-height: 0;
   }
 
   .catalog-section,
