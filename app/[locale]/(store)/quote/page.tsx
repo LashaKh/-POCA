@@ -3,6 +3,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ManualQuoteForm } from "@/components/quotes/manual-quote-form";
 import { isAppLocale } from "@/i18n/routing";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function ManualQuotePage({
   params,
   searchParams,

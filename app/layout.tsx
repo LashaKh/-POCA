@@ -38,6 +38,7 @@ const displayFont = Noto_Serif_Georgian({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.SITE_URL ?? "http://127.0.0.1:3000"),
   title: {
     default: "ÉPOCA",
     template: "%s — ÉPOCA",

@@ -9,6 +9,7 @@ import { formatMinorMoney } from "@/lib/money/format";
 import { minorAmount } from "@/lib/money/minor";
 
 export const dynamic = "force-dynamic";
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function OrderPage({
   params,

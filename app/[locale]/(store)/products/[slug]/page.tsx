@@ -7,6 +7,7 @@ import { ProductFacts } from "@/components/storefront/product-facts";
 import { AddToCartForm } from "@/components/commerce/cart/add-to-cart-form";
 import { ProductGallery } from "@/components/storefront/product-gallery";
 import { ProductCard } from "@/components/storefront/product-card";
+import { Breadcrumbs } from "@/components/storefront/breadcrumbs";
 import { Notice } from "@/components/ui";
 import { getEffectiveCurrencyPreference } from "@/features/preferences/currency";
 import { getCatalogProduct } from "@/features/catalog/queries";
@@ -26,36 +27,46 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isAppLocale(locale)) return {};
-  const currency = await getEffectiveCurrencyPreference();
+  const currency = await getEffectiveCurrencyPreference(
+    (await searchParams).currency,
+  );
   const record = await getCatalogProduct({ locale, currency, slug });
   if (!record) return { robots: { index: false, follow: false } };
   return buildCatalogMetadata({
     locale,
-    pathname: `/products/${slug}`,
-    title: record.product.name,
-    description: record.product.shortDescription ?? record.product.name,
+    routeSet: record.product.routeSet,
+    title: record.product.seoTitle ?? record.product.name,
+    description:
+      record.product.seoDescription ??
+      record.product.shortDescription ??
+      record.product.name,
     image: record.product.primaryImagePath,
-    index: true,
+    index: !record.product.usedFallback,
   });
 }
 
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale, slug } = await params;
   if (!isAppLocale(locale)) return null;
   setRequestLocale(locale);
-  const [t, commerce, currency] = await Promise.all([
+  const [t, commerce, common, currency] = await Promise.all([
     getTranslations({ locale, namespace: "catalog" }),
     getTranslations({ locale, namespace: "commerce" }),
-    getEffectiveCurrencyPreference(),
+    getTranslations({ locale, namespace: "common" }),
+    getEffectiveCurrencyPreference((await searchParams).currency),
   ]);
   const [record, wishlist] = await Promise.all([
     getCatalogProduct({ locale, currency, slug }),
@@ -64,18 +75,30 @@ export default async function ProductPage({
   if (!record) notFound();
   const { product, details, images, relatedProducts } = record;
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const structuredData = [
+    buildProductStructuredData(product, {
+      images: images.map((image) => image.path),
+    }),
+    buildProductBreadcrumbStructuredData(product),
+    buildOrganizationStructuredData(),
+  ].filter((value) => value !== undefined);
 
   return (
     <main className="product-page" id="main-content">
+      <Breadcrumbs
+        locale={locale}
+        label={t("breadcrumbs")}
+        items={[
+          { label: common("home"), href: "/" },
+          { label: t("collectionsTitle"), href: "/collections" },
+          { label: product.name },
+        ]}
+      />
       <script
         nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: serializeStructuredData([
-            buildProductStructuredData(product),
-            buildProductBreadcrumbStructuredData(product),
-            buildOrganizationStructuredData(),
-          ]),
+          __html: serializeStructuredData(structuredData),
         }}
       />
       <ProductGallery

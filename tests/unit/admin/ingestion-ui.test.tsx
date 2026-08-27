@@ -36,6 +36,7 @@ describe("ingestion review controls", () => {
           productId: "12345678-1234-4123-8123-123456789abc",
           productVersion: 1,
           blockers: [{ group: "media", code: "MEDIA_REVIEW_REQUIRED" }],
+          warnings: [],
         }}
         labels={{
           title: "Readiness",

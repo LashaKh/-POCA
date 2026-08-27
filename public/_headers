@@ -33,6 +33,18 @@
   Cache-Control: private, no-store
   X-Robots-Tag: noindex, nofollow
 
+/*/cart*
+  Cache-Control: private, no-store
+  X-Robots-Tag: noindex, nofollow
+
+/*/payment/*
+  Cache-Control: private, no-store
+  X-Robots-Tag: noindex, nofollow
+
+/*/quote*
+  Cache-Control: private, no-store
+  X-Robots-Tag: noindex, nofollow
+
 /*/order/*
   Cache-Control: private, no-store
   X-Robots-Tag: noindex, nofollow

@@ -81,6 +81,9 @@ export const serverEnvironmentSchema = z
     MONITORING_CHECK_REFERENCE: optionalEvidenceReference,
     BACKUP_RESTORE_EVIDENCE_REFERENCE: optionalEvidenceReference,
     DOMAIN_ACTIVATION_REFERENCE: optionalEvidenceReference,
+    SEARCH_CONSOLE_ACTIVATION_REFERENCE: optionalEvidenceReference,
+    MERCHANT_CENTER_ACTIVATION_REFERENCE: optionalEvidenceReference,
+    BING_WEBMASTER_ACTIVATION_REFERENCE: optionalEvidenceReference,
     LEGAL_APPROVAL_REFERENCE: optionalEvidenceReference,
     NETLIFY_SITE_ID: optionalEvidenceReference,
     MANAGED_SUPABASE_PROJECT_REF: z

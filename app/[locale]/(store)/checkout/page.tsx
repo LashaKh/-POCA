@@ -9,6 +9,7 @@ import { Link } from "@/i18n/navigation";
 import { getCheckoutCustomerDefaults } from "@/features/customer/queries";
 
 export const dynamic = "force-dynamic";
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function CheckoutPage({
   params,

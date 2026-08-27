@@ -35,8 +35,8 @@ export async function SiteHeader({
     : [
         {
           key: "collection",
-          path: "/search",
-          label: t("home"),
+          path: "/collections",
+          label: catalog("collectionsTitle"),
         },
         { key: "journal", path: "/journal", label: content("journal") },
         { key: "about", path: "/about", label: t("about") },

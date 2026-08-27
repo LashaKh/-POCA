@@ -31,6 +31,18 @@ export function ReadinessPanel({
           ))}
         </ul>
       ) : null}
+      {readiness.warnings.length ? (
+        <div className="admin-notice" role="status">
+          <ul>
+            {readiness.warnings.map((warning) => (
+              <li key={`${warning.group}-${warning.code}`}>
+                <strong>{warning.group}</strong> ·{" "}
+                {labels[warning.code] ?? warning.code}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </section>
   );
 }

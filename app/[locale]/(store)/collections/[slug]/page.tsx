@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { ProductCard } from "@/components/storefront/product-card";
+import { Breadcrumbs } from "@/components/storefront/breadcrumbs";
 import {
   CatalogControls,
   CatalogPagination,
@@ -13,7 +15,12 @@ import {
   getCollection,
   searchCatalog,
 } from "@/features/catalog/queries";
-import { buildCatalogMetadata } from "@/features/catalog/metadata";
+import {
+  buildBreadcrumbStructuredData,
+  buildCatalogMetadata,
+  getCanonicalOrigin,
+  serializeStructuredData,
+} from "@/features/catalog/metadata";
 import { parseCatalogSearchParams } from "@/features/catalog/search-params";
 import { getWishlistProductIds } from "@/features/wishlist/queries";
 import { Link } from "@/i18n/navigation";
@@ -23,19 +30,25 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isAppLocale(locale)) return {};
-  const collection = await getCollection(locale, slug);
+  const [collection, query] = await Promise.all([
+    getCollection(locale, slug),
+    searchParams,
+  ]);
   if (!collection) return { robots: { index: false, follow: false } };
   return buildCatalogMetadata({
     locale,
-    pathname: `/collections/${slug}`,
+    routeSet: collection.routeSet,
     title: collection.seo_title ?? collection.name,
     description:
       collection.seo_description ?? collection.description ?? collection.name,
+    index: Object.keys(query).length === 0,
   });
 }
 
@@ -49,27 +62,65 @@ export default async function CollectionPage({
   const { locale, slug } = await params;
   if (!isAppLocale(locale)) return null;
   setRequestLocale(locale);
-  const [t, currency, collection, rawSearch] = await Promise.all([
+  const [t, common, currency, collection, rawSearch] = await Promise.all([
     getTranslations({ locale, namespace: "catalog" }),
+    getTranslations({ locale, namespace: "common" }),
     getEffectiveCurrencyPreference(),
     getCollection(locale, slug),
     searchParams,
   ]);
   if (!collection) notFound();
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   const parsed = parseCatalogSearchParams({
     ...rawSearch,
-    collection: slug,
+    collection: collection.slug,
     currency,
   });
   const [result, facets, wishlist] = await Promise.all([
-    searchCatalog({ locale, currency, params: parsed }),
-    getCatalogFacets({ locale, currency, collection: slug }),
+    searchCatalog({
+      locale: collection.routeSet.resolvedLocale,
+      currency,
+      params: parsed,
+    }),
+    getCatalogFacets({
+      locale: collection.routeSet.resolvedLocale,
+      currency,
+      collection: collection.slug,
+    }),
     getWishlistProductIds(),
   ]);
 
   return (
     <main className="catalog-page" id="main-content">
+      <script
+        nonce={nonce}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeStructuredData(
+            buildBreadcrumbStructuredData([
+              {
+                name: common("home"),
+                url: `${getCanonicalOrigin()}/${locale}`,
+              },
+              {
+                name: t("collectionsTitle"),
+                url: `${getCanonicalOrigin()}/${locale}/collections`,
+              },
+              { name: collection.name, url: collection.routeSet.canonicalUrl },
+            ]),
+          ),
+        }}
+      />
+      <Breadcrumbs
+        locale={locale}
+        label={t("breadcrumbs")}
+        items={[
+          { label: common("home"), href: "/" },
+          { label: t("collectionsTitle"), href: "/collections" },
+          { label: collection.name },
+        ]}
+      />
       <header className="catalog-page-header">
         <p className="eyebrow">{t("eyebrow")}</p>
         <h1>{collection.name}</h1>
@@ -77,7 +128,7 @@ export default async function CollectionPage({
       </header>
       <CatalogControls
         locale={locale}
-        slug={slug}
+        slug={collection.slug}
         parsed={parsed}
         facets={facets}
         labels={{
@@ -113,14 +164,14 @@ export default async function CollectionPage({
       ) : (
         <section className="empty-state">
           <h2>{t("noResults")}</h2>
-          <Link href={`/collections/${slug}`} locale={locale}>
+          <Link href={`/collections/${collection.slug}`} locale={locale}>
             {t("clearFilters")}
           </Link>
         </section>
       )}
       <CatalogPagination
         locale={locale}
-        pathname={`/collections/${slug}`}
+        pathname={`/collections/${collection.slug}`}
         parsed={parsed}
         totalCount={result.totalCount}
         label={t("catalogPages")}

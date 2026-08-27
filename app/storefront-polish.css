@@ -869,8 +869,8 @@ textarea {
 
   .site-header-main > *,
   .site-header-bar-desktop {
-    animation: archive-rise var(--motion-standard) var(--ease-out-expressive)
-      both;
+    animation: archive-header-rise var(--motion-standard)
+      var(--ease-out-expressive) both;
   }
 
   .site-header-main > :nth-child(2) {
@@ -1163,6 +1163,12 @@ textarea {
 @keyframes archive-rise {
   from {
     opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@keyframes archive-header-rise {
+  from {
     transform: translateY(0.5rem);
   }
 }

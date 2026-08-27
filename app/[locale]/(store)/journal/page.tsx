@@ -1,10 +1,29 @@
 import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
+import { Breadcrumbs } from "@/components/storefront/breadcrumbs";
 import { getPublishedJournal } from "@/features/content/queries";
 import { getContentLabels } from "@/features/content/service-copy";
 import { Link } from "@/i18n/navigation";
 import { isAppLocale } from "@/i18n/routing";
 import { ArrowUpRightIcon } from "@/components/ui";
+import { buildCatalogMetadata } from "@/features/catalog/metadata";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isAppLocale(locale)) return {};
+  const labels = await getContentLabels(locale);
+  return buildCatalogMetadata({
+    locale,
+    pathname: "/journal",
+    title: labels.journal,
+    description: labels.journalIntro,
+  });
+}
 
 export default async function JournalPage({
   params,
@@ -13,13 +32,22 @@ export default async function JournalPage({
 }) {
   const { locale } = await params;
   if (!isAppLocale(locale)) return null;
-  const [labels, entries, common] = await Promise.all([
+  const [labels, entries, common, catalog] = await Promise.all([
     getContentLabels(locale),
     getPublishedJournal(locale),
     getTranslations({ locale, namespace: "common" }),
+    getTranslations({ locale, namespace: "catalog" }),
   ]);
   return (
     <main className="service-page journal-page" id="main-content">
+      <Breadcrumbs
+        locale={locale}
+        label={catalog("breadcrumbs")}
+        items={[
+          { label: common("home"), href: "/" },
+          { label: labels.journal },
+        ]}
+      />
       <header className="journal-hero">
         <div>
           <p className="eyebrow">ÉPOCA · 01</p>

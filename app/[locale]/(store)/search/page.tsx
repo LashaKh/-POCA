@@ -8,12 +8,26 @@ import { parseCatalogSearchParams } from "@/features/catalog/search-params";
 import { getWishlistProductIds } from "@/features/wishlist/queries";
 import { Link } from "@/i18n/navigation";
 import { isAppLocale } from "@/i18n/routing";
+import { buildCatalogMetadata } from "@/features/catalog/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Search",
-  robots: { index: false, follow: true },
-};
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isAppLocale(locale)) return {};
+  const t = await getTranslations({ locale, namespace: "catalog" });
+  return buildCatalogMetadata({
+    locale,
+    pathname: "/search",
+    title: t("search"),
+    description: t("homeBody"),
+    index: false,
+  });
+}
 
 export default async function SearchPage({
   params,

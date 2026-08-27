@@ -17,6 +17,17 @@ import {
 
 const handleInternationalization = createIntlMiddleware(routing);
 const protectedSegments = new Set(["admin", "account"]);
+const noIndexSegments = new Set([
+  "admin",
+  "account",
+  "auth",
+  "cart",
+  "checkout",
+  "order",
+  "payment",
+  "quote",
+  "preview",
+]);
 
 type PublishedRedirect = {
   destination_path: string;
@@ -69,6 +80,17 @@ function withResponseHeaders(
   return response;
 }
 
+function applyPrivateIndexingHeaders(
+  response: NextResponse,
+  segment: string | undefined,
+) {
+  if (segment && noIndexSegments.has(segment)) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    response.headers.set("Cache-Control", "private, no-store");
+  }
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const correlationId = resolveCorrelationId(request.headers);
   request.headers.set(correlationHeader, correlationId);
@@ -84,6 +106,28 @@ export async function proxy(request: NextRequest) {
   request.headers.set("x-nonce", nonce);
   request.headers.set("content-security-policy", contentSecurityPolicy);
 
+  if (request.nextUrl.pathname === "/") {
+    return withResponseHeaders(
+      NextResponse.redirect(new URL(`/${routing.defaultLocale}`, request.url), {
+        status: 308,
+      }),
+      correlationId,
+      securityOptions,
+    );
+  }
+
+  if (
+    request.nextUrl.pathname.startsWith("/feeds/") ||
+    request.nextUrl.pathname === "/opengraph-image"
+  ) {
+    const publicResponse = NextResponse.next({ request });
+    publicResponse.headers.set(
+      "Content-Security-Policy",
+      contentSecurityPolicy,
+    );
+    return withResponseHeaders(publicResponse, correlationId, securityOptions);
+  }
+
   if (request.nextUrl.pathname.startsWith("/api/")) {
     const apiResponse = NextResponse.next({ request });
     apiResponse.headers.set("Content-Security-Policy", contentSecurityPolicy);
@@ -98,10 +142,12 @@ export async function proxy(request: NextRequest) {
 
   const { context, response } = await refreshRequestAuth(request);
   const localizedPath = parseLocalizedPath(request.nextUrl.pathname);
-  const managedRedirect = await resolveManagedRedirect(
-    localizedPath.pathname,
-    publicEnvironment,
-  );
+  const managedRedirect =
+    (await resolveManagedRedirect(
+      request.nextUrl.pathname,
+      publicEnvironment,
+    )) ??
+    (await resolveManagedRedirect(localizedPath.pathname, publicEnvironment));
   if (managedRedirect) {
     const destination = /^\/(ka|en|de|ru)(?:\/|$)/.test(
       managedRedirect.destination_path,
@@ -122,7 +168,10 @@ export async function proxy(request: NextRequest) {
 
   if (!isProtected) {
     return withResponseHeaders(
-      copyAuthCookies(response, intlResponse),
+      applyPrivateIndexingHeaders(
+        copyAuthCookies(response, intlResponse),
+        localizedPath.segment,
+      ),
       correlationId,
       securityOptions,
     );
@@ -135,7 +184,10 @@ export async function proxy(request: NextRequest) {
     );
     signInUrl.searchParams.set("returnTo", localizedPath.pathname);
     return withResponseHeaders(
-      NextResponse.redirect(signInUrl),
+      applyPrivateIndexingHeaders(
+        NextResponse.redirect(signInUrl),
+        localizedPath.segment,
+      ),
       correlationId,
       securityOptions,
     );
@@ -143,8 +195,11 @@ export async function proxy(request: NextRequest) {
 
   if (context.sessionState !== "active") {
     return withResponseHeaders(
-      NextResponse.redirect(
-        new URL(`/${localizedPath.locale}/auth/session-ended`, request.url),
+      applyPrivateIndexingHeaders(
+        NextResponse.redirect(
+          new URL(`/${localizedPath.locale}/auth/session-ended`, request.url),
+        ),
+        localizedPath.segment,
       ),
       correlationId,
       securityOptions,
@@ -156,14 +211,20 @@ export async function proxy(request: NextRequest) {
     (context.kind !== "staff" || !context.active)
   ) {
     return withResponseHeaders(
-      new NextResponse(null, { status: 404 }),
+      applyPrivateIndexingHeaders(
+        new NextResponse(null, { status: 404 }),
+        localizedPath.segment,
+      ),
       correlationId,
       securityOptions,
     );
   }
 
   return withResponseHeaders(
-    copyAuthCookies(response, intlResponse),
+    applyPrivateIndexingHeaders(
+      copyAuthCookies(response, intlResponse),
+      localizedPath.segment,
+    ),
     correlationId,
     securityOptions,
   );

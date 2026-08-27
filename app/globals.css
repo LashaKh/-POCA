@@ -8,6 +8,100 @@
   box-sizing: border-box;
 }
 
+/* Google discovery: quiet, semantic wayfinding for the Collector's Index. */
+.breadcrumbs,
+.collection-index-page {
+  width: min(100% - 2rem, 86rem);
+  margin-inline: auto;
+}
+
+.breadcrumbs {
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--color-border, currentColor);
+}
+
+.product-page > .breadcrumbs,
+.catalog-page > .breadcrumbs {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.breadcrumbs ol,
+.collection-index-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  content: "/";
+  margin-inline-start: 0.7rem;
+  opacity: 0.55;
+}
+
+.breadcrumbs a {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  text-underline-offset: 0.2em;
+}
+
+.collection-index-page {
+  padding-block-end: clamp(4rem, 8vw, 8rem);
+}
+
+.collection-index-header {
+  max-width: 54rem;
+  padding-block: clamp(3rem, 7vw, 7rem);
+}
+
+.collection-index-header > p:last-child {
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+}
+
+.collection-index-list {
+  border-top: 1px solid var(--color-border, currentColor);
+}
+
+.collection-index-list > li {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--color-border, currentColor);
+}
+
+.collection-index-list h2 {
+  margin-block: 0 0.75rem;
+}
+
+.collection-index-list h2 a {
+  display: inline-block;
+  padding-block: 0.25rem;
+  text-underline-offset: 0.18em;
+}
+
+@media (min-width: 48rem) {
+  .breadcrumbs,
+  .collection-index-page {
+    width: min(100% - 4rem, 86rem);
+  }
+
+  .collection-index-list > li {
+    grid-template-columns: 5rem minmax(0, 1fr);
+  }
+}
+
 html {
   background: var(--color-paper);
   color: var(--color-ink);

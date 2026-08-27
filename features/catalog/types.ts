@@ -1,6 +1,7 @@
 import type { SupportedCurrency } from "@/i18n/preferences";
 import type { AppLocale } from "@/i18n/routing";
 import { minorAmount } from "@/lib/money/minor";
+import type { LocalizedRouteSet } from "@/features/seo/routes";
 
 import { catalogProductRowSchema } from "./schema";
 
@@ -23,6 +24,17 @@ export type CatalogProduct = {
   colors: string[];
   origin?: string;
   primaryImagePath?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  condition?: string;
+  structuredDataEligible: boolean;
+  brand?: string;
+  gtin?: string;
+  mpn?: string;
+  identifierExists: boolean | null;
+  publishedAt?: string;
+  updatedAt?: string;
+  routeSet?: LocalizedRouteSet;
 };
 
 export function selectLocalizedTranslation<T extends { locale: AppLocale }>(
@@ -68,5 +80,15 @@ export function mapCatalogProduct(input: unknown): CatalogProduct {
     colors: row.colors,
     origin: row.originVerified ? row.origin : undefined,
     primaryImagePath: row.primaryImagePath,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    condition: row.condition,
+    structuredDataEligible: row.structuredDataEligible,
+    brand: row.brand,
+    gtin: row.gtin,
+    mpn: row.mpn,
+    identifierExists: row.identifierExists,
+    publishedAt: row.publishedAt,
+    updatedAt: row.updatedAt,
   };
 }

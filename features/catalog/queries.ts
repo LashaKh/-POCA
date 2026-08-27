@@ -5,8 +5,10 @@ import { cache } from "react";
 import type { CatalogSearchParams } from "./search-params";
 import { mapCatalogProduct, type CatalogProduct } from "./types";
 
+import { getCanonicalOrigin } from "@/features/catalog/metadata";
+import { buildLocalizedRouteSet } from "@/features/seo/routes";
 import type { SupportedCurrency } from "@/i18n/preferences";
-import type { AppLocale } from "@/i18n/routing";
+import { isAppLocale, type AppLocale } from "@/i18n/routing";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type CatalogListResult = {
@@ -214,21 +216,88 @@ export async function getCatalogProductsByIds({
 
 const getCollectionCached = cache(async (locale: AppLocale, slug: string) => {
   const client = await createServerSupabaseClient();
-  const { data, error } = await client
-    .from("collection_translations")
-    .select(
-      "collection_id,locale,slug,name,description,seo_title,seo_description",
-    )
-    .eq("locale", locale)
+  const { data: candidates, error } = await client
+    .from("published_collection_routes")
+    .select("*")
     .eq("slug", slug)
-    .maybeSingle();
+    .in("locale", [locale, "en", "ka"]);
 
   if (error) throw error;
-  return data;
+  const publishedCandidates = (candidates ?? []).filter(
+    (
+      candidate,
+    ): candidate is typeof candidate & {
+      collection_id: string;
+      locale: AppLocale;
+      slug: string;
+      name: string;
+      product_count: number;
+    } =>
+      Boolean(
+        candidate.collection_id &&
+        isAppLocale(candidate.locale) &&
+        candidate.slug &&
+        candidate.name &&
+        candidate.product_count !== null,
+      ),
+  );
+  const selected =
+    publishedCandidates.find((candidate) => candidate.locale === locale) ??
+    publishedCandidates.find((candidate) => candidate.locale === "en") ??
+    publishedCandidates.find((candidate) => candidate.locale === "ka");
+  if (!selected) return undefined;
+  const { data: routes, error: routeError } = await client
+    .from("published_collection_routes")
+    .select("locale,slug")
+    .eq("collection_id", selected.collection_id);
+  if (routeError) throw routeError;
+  const publishedRoutes = (routes ?? []).flatMap((route) =>
+    isAppLocale(route.locale) && route.slug
+      ? [{ locale: route.locale, slug: route.slug }]
+      : [],
+  );
+  return {
+    ...selected,
+    routeSet: buildLocalizedRouteSet({
+      origin: getCanonicalOrigin(),
+      requestedLocale: locale,
+      resolvedLocale: selected.locale,
+      routes: publishedRoutes,
+      pathFor: (route) => `/${route.locale}/collections/${route.slug}`,
+    }),
+  };
 });
 
 export async function getCollection(locale: AppLocale, slug: string) {
   return getCollectionCached(locale, slug);
+}
+
+export async function getPublishedCollections(locale: AppLocale) {
+  const client = await createServerSupabaseClient();
+  const { data, error } = await client
+    .from("published_collection_routes")
+    .select("*")
+    .eq("locale", locale)
+    .order("name");
+  if (error) throw error;
+  return (data ?? []).flatMap((collection) =>
+    collection.collection_id &&
+    isAppLocale(collection.locale) &&
+    collection.slug &&
+    collection.name &&
+    collection.product_count !== null
+      ? [
+          {
+            ...collection,
+            collection_id: collection.collection_id,
+            locale: collection.locale,
+            slug: collection.slug,
+            name: collection.name,
+            product_count: collection.product_count,
+          },
+        ]
+      : [],
+  );
 }
 
 export async function getCatalogProduct({
@@ -249,16 +318,39 @@ const getCatalogProductCached = cache(async function getCatalogProductRecord(
   slug: string,
 ) {
   const client = await createServerSupabaseClient();
-  const { data, error } = await client
+  const { data: candidates, error } = await client
     .from("public_catalog_products")
     .select("*")
-    .eq("locale", locale)
     .eq("slug", slug)
-    .eq("currency", currency)
-    .maybeSingle();
+    .eq("currency", currency);
 
   if (error) throw error;
+  const publishedCandidates = (candidates ?? []).filter(
+    (
+      candidate,
+    ): candidate is typeof candidate & {
+      id: string;
+      locale: AppLocale;
+      slug: string;
+    } =>
+      Boolean(candidate.id && isAppLocale(candidate.locale) && candidate.slug),
+  );
+  const data =
+    publishedCandidates.find((candidate) => candidate.locale === locale) ??
+    publishedCandidates.find((candidate) => candidate.locale === "en") ??
+    publishedCandidates.find((candidate) => candidate.locale === "ka");
   if (!data) return undefined;
+
+  const { data: routes, error: routeError } = await client
+    .from("published_product_routes")
+    .select("locale,slug")
+    .eq("product_id", data.id);
+  if (routeError) throw routeError;
+  const publishedRoutes = (routes ?? []).flatMap((route) =>
+    isAppLocale(route.locale) && route.slug
+      ? [{ locale: route.locale, slug: route.slug }]
+      : [],
+  );
 
   const product = mapCatalogProduct({
     id: data.id,
@@ -282,6 +374,23 @@ const getCatalogProductCached = cache(async function getCatalogProductRecord(
           .from("product-renditions")
           .getPublicUrl(data.primary_image_path).data.publicUrl
       : undefined,
+    seoTitle: data.seo_title ?? undefined,
+    seoDescription: data.seo_description ?? undefined,
+    condition: data.condition ?? undefined,
+    structuredDataEligible: data.structured_data_eligible,
+    brand: data.brand ?? undefined,
+    gtin: data.gtin ?? undefined,
+    mpn: data.mpn ?? undefined,
+    identifierExists: data.identifier_exists,
+    publishedAt: data.published_at ?? undefined,
+    updatedAt: data.translation_updated_at ?? data.updated_at ?? undefined,
+  });
+  product.routeSet = buildLocalizedRouteSet({
+    origin: getCanonicalOrigin(),
+    requestedLocale: locale,
+    resolvedLocale: data.locale,
+    routes: publishedRoutes,
+    pathFor: (route) => `/${route.locale}/products/${route.slug}`,
   });
 
   const { data: links, error: linksError } = await client

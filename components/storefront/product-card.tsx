@@ -23,6 +23,7 @@ export function ProductCard({
   position?: number;
   motionReveal?: boolean;
 }) {
+  const productLocale = product.usedFallback ? product.contentLocale : locale;
   const availabilityLabels = {
     ka: { available: "ხელმისაწვდომია", unavailable: "მიუწვდომელია" },
     en: { available: "Available", unavailable: "Unavailable" },
@@ -54,7 +55,7 @@ export function ProductCard({
       data-motion-order={motionReveal ? position : undefined}
       data-motion-reveal={motionReveal ? "card" : undefined}
     >
-      <Link href={`/products/${product.slug}`} locale={locale}>
+      <Link href={`/products/${product.slug}`} locale={productLocale}>
         <div className="product-card-media">
           <ResponsiveProductImage
             src={product.primaryImagePath}

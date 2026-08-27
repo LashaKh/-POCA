@@ -28,6 +28,11 @@ export async function SiteFooter({ locale }: { locale: AppLocale }) {
     ? menu
     : [
         {
+          key: "collections",
+          path: "/collections",
+          label: catalog("collectionsTitle"),
+        },
+        {
           key: "about",
           path: "/about",
           label: getFallbackServiceContent("about", locale).title,

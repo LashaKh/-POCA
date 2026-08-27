@@ -5,6 +5,8 @@ import { ManualQuoteStatus } from "@/components/quotes/manual-quote-status";
 import { getBuyerManualQuote } from "@/features/quotes/queries";
 import { isAppLocale } from "@/i18n/routing";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function ManualQuoteStatusPage({
   params,
 }: {

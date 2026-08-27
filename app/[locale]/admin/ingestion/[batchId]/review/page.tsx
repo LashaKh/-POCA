@@ -355,6 +355,9 @@ export default async function IngestionReviewPage({
           SUGGESTIONS_REQUIRE_DECISION: t(
             "blocker.SUGGESTIONS_REQUIRE_DECISION",
           ),
+          product_without_public_collection_path: t(
+            "blocker.product_without_public_collection_path",
+          ),
         }}
       />
       {readiness.ready ? (

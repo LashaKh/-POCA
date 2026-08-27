@@ -30,4 +30,17 @@ export const catalogProductRowSchema = z.object({
   origin: z.string().max(120).optional(),
   originVerified: z.boolean().default(false),
   primaryImagePath: z.string().max(500).optional(),
+  seoTitle: z.string().max(70).optional(),
+  seoDescription: z.string().max(180).optional(),
+  condition: z.string().max(120).optional(),
+  structuredDataEligible: z.boolean().default(false),
+  brand: z.string().max(120).optional(),
+  gtin: z
+    .string()
+    .regex(/^(?:[0-9]{8}|[0-9]{12}|[0-9]{13}|[0-9]{14})$/)
+    .optional(),
+  mpn: z.string().max(70).optional(),
+  identifierExists: z.boolean().nullable().default(null),
+  publishedAt: z.string().optional(),
+  updatedAt: z.string().optional(),
 });

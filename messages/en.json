@@ -27,6 +27,12 @@
     "apply": "Apply",
     "worldwideDelivery": "Delivery from Georgia worldwide",
     "eyebrow": "Collector’s Index",
+    "collectionsTitle": "Collections",
+    "collectionsIntro": "Curated paths through the published carpet records.",
+    "collectionsEmpty": "No curated collections are published yet.",
+    "collectionCount": "{count, plural, one {# published carpet} other {# published carpets}}",
+    "breadcrumbs": "Breadcrumbs",
+    "collectionIndex": "All collections",
     "homeTitle": "Carpets, recorded with care.",
     "homeBody": "Browse verified product records with clear price, availability, and delivery information.",
     "homeBrowse": "Browse the collection",
@@ -715,7 +721,8 @@
         "APPROVED_LICENSED_PRIMARY_REQUIRED": "Approve a primary image and its rights evidence.",
         "APPROVED_RENDITIONS_REQUIRED": "Required card, gallery, and sharing images must be processed and approved.",
         "MEDIA_REVIEW_REQUIRED": "Primary image alt text and crop review are required.",
-        "SUGGESTIONS_REQUIRE_DECISION": "Accept, edit, or reject every pending suggestion."
+        "SUGGESTIONS_REQUIRE_DECISION": "Accept, edit, or reject every pending suggestion.",
+        "product_without_public_collection_path": "Add this published product to at least one published collection so shoppers and search engines can reach it through ordinary navigation."
       }
     },
     "content": {

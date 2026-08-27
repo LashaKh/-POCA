@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { AppLocale } from "@/i18n/routing";
+import { isAppLocale, type AppLocale } from "@/i18n/routing";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 
@@ -44,6 +44,31 @@ export async function getPublishedContentBySlug(
   return result.data?.entry_key
     ? getPublishedContent(result.data.entry_key, locale)
     : undefined;
+}
+
+export async function getPublishedContentRoutes(entryKey: string) {
+  const client = createServiceSupabaseClient();
+  const result = await client
+    .from("published_content_projection")
+    .select("entry_key,content_type,locale,slug,published_at")
+    .eq("entry_key", entryKey);
+  if (result.error) throw result.error;
+  return (result.data ?? []).flatMap((route) =>
+    route.entry_key &&
+    route.content_type &&
+    isAppLocale(route.locale) &&
+    route.slug
+      ? [
+          {
+            entry_key: route.entry_key,
+            content_type: route.content_type,
+            locale: route.locale,
+            slug: route.slug,
+            published_at: route.published_at,
+          },
+        ]
+      : [],
+  );
 }
 
 export async function getPublishedMenu(

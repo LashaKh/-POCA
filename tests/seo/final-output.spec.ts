@@ -69,14 +69,12 @@ test("generated production output exposes truthful localized discovery metadata"
       "@type"?: string;
       offers?: { availability?: string; priceCurrency?: string };
     }>;
+    expect(records.map((record) => record["@type"])).toEqual(
+      expect.arrayContaining(["BreadcrumbList", "OnlineStore"]),
+    );
     expect(
       records.find((record) => record["@type"] === "Product"),
-    ).toMatchObject({
-      offers: {
-        availability: "https://schema.org/InStock",
-        priceCurrency: "GEL",
-      },
-    });
+    ).toBeUndefined();
   }
 
   await page.goto("/en/search?query=synthetic");

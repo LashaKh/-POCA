@@ -27,6 +27,12 @@
     "apply": "Anwenden",
     "worldwideDelivery": "Weltweite Lieferung aus Georgien",
     "eyebrow": "Sammlerindex",
+    "collectionsTitle": "Kollektionen",
+    "collectionsIntro": "Kuratierte Wege durch die veröffentlichten Teppichdatensätze.",
+    "collectionsEmpty": "Noch sind keine kuratierten Kollektionen veröffentlicht.",
+    "collectionCount": "{count, plural, one {# veröffentlichter Teppich} other {# veröffentlichte Teppiche}}",
+    "breadcrumbs": "Brotkrümelnavigation",
+    "collectionIndex": "Alle Kollektionen",
     "homeTitle": "Teppiche, sorgfältig erfasst.",
     "homeBody": "Durchsuchen Sie geprüfte Produktdatensätze mit klaren Angaben zu Preis, Verfügbarkeit und Lieferung.",
     "homeBrowse": "Kollektion ansehen",
@@ -715,7 +721,8 @@
         "APPROVED_LICENSED_PRIMARY_REQUIRED": "Hauptbild und Rechtebeleg freigeben.",
         "APPROVED_RENDITIONS_REQUIRED": "Karten-, Galerie- und Teilen-Bilder müssen verarbeitet und freigegeben sein.",
         "MEDIA_REVIEW_REQUIRED": "Alternativtext und Ausschnitt des Hauptbilds müssen geprüft sein.",
-        "SUGGESTIONS_REQUIRE_DECISION": "Jeden ausstehenden Vorschlag annehmen, bearbeiten oder ablehnen."
+        "SUGGESTIONS_REQUIRE_DECISION": "Jeden ausstehenden Vorschlag annehmen, bearbeiten oder ablehnen.",
+        "product_without_public_collection_path": "Dieses veröffentlichte Produkt mindestens einer veröffentlichten Kollektion zuordnen, damit Menschen und Suchmaschinen es über die normale Navigation erreichen."
       }
     },
     "content": {

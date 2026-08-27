@@ -3,6 +3,10 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 
 import { getBankTransferMethod } from "@/features/payments/bank-transfer";
+import {
+  merchantFeedProfiles,
+  validateMerchantFeedProfile,
+} from "@/features/seo/merchant-feed";
 import { getServerEnvironment } from "@/lib/env/server";
 import { createServiceSupabaseClient } from "@/lib/supabase/service";
 
@@ -60,7 +64,24 @@ export async function evaluateOperationalReadiness(
     },
     externalBlockers,
   };
-  return { ...evaluateReadiness(input), input };
+  const googleDiscovery = {
+    domainActivated: Boolean(environment.DOMAIN_ACTIVATION_REFERENCE),
+    searchConsoleActivated: Boolean(
+      environment.SEARCH_CONSOLE_ACTIVATION_REFERENCE,
+    ),
+    merchantCenterActivated: Boolean(
+      environment.MERCHANT_CENTER_ACTIVATION_REFERENCE,
+    ),
+    bingWebmasterActivated: Boolean(
+      environment.BING_WEBMASTER_ACTIVATION_REFERENCE,
+    ),
+    feedProfiles: Object.values(merchantFeedProfiles).map((profile) => ({
+      id: profile.id,
+      ready: validateMerchantFeedProfile(profile).length === 0,
+      blockers: validateMerchantFeedProfile(profile),
+    })),
+  };
+  return { ...evaluateReadiness(input), input, googleDiscovery };
 }
 
 export async function recordOperationalReadiness(

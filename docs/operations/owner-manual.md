@@ -83,6 +83,12 @@ For each provider:
 Fixture/sandbox modes are forbidden in production. Disabled is honest and may
 be build-complete, but required disabled providers block launch-ready.
 
+For organic search, Search Console, Merchant Center free listings, and Bing,
+follow `docs/operations/google-discovery-activation.md`. Keep Merchant feeds
+disabled until each item resolves to one approved seller, origin, market,
+price, shipping policy, and return policy; do not submit the placeholder
+domain or create a Business Profile without a verified customer-facing site.
+
 ## Audit and protected exports
 
 Use `/admin/audit` only at AAL2.

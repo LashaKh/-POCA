@@ -41,6 +41,8 @@ const product = {
   dimensions: { widthMm: 1600, lengthMm: 2400 },
   materials: ["Wool"],
   colors: ["Indigo"],
+  structuredDataEligible: false,
+  identifierExists: null,
 };
 
 describe("catalog components", () => {

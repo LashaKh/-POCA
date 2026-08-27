@@ -1,0 +1,129 @@
+# Implementation Plan: Google Discovery
+
+**Branch**: `002-google-discovery` | **Date**: 2026-08-27 | **Spec**: [spec.md](./spec.md)  
+**Input**: Approved, clarified, and upgraded Google Discovery specification  
+**Status**: Design complete; ready for task generation
+
+## Summary
+
+Build one reusable discovery layer on top of the existing Next.js and Supabase storefront. Stable product, collection, and content identities will produce real locale-specific routes; page metadata, JSON-LD, breadcrumbs, sitemap entries, redirects, and future Merchant feeds will consume those same facts. Organic improvements ship now. Merchant endpoints exist but fail closed with 404 until the final domain, seller ownership, market, shipping, and return facts are approved.
+
+## Technical Context
+
+**Language/Version**: TypeScript 6.0.x strict mode; SQL/PostgreSQL migrations; Node.js 24 LTS  
+**Primary Dependencies**: Next.js 16.3.2 App Router, React 19.2, Supabase JS/SSR 2.112.4, next-intl 4.13.7, Zod 4.4.3  
+**Storage**: Existing Supabase Postgres catalog/content tables and approved public media renditions; no new external store  
+**Testing**: Vitest 4.1.11, Testing Library, Playwright 1.62.1, Supabase pgTAP, generated metadata/sitemap/feed contract tests  
+**Target Platform**: Netlify-hosted server-rendered web storefront backed by managed Supabase; local placeholder origin for development  
+**Project Type**: Single localized ecommerce web application  
+**Performance Goals**: Preserve p75 LCP ≤2.5 seconds, INP <200 milliseconds, CLS <0.1; sitemap readiness below 45,000 URLs  
+**Constraints**: No final domain, Search Console property, Merchant account, approved seller mapping, or finalized market policies; no external activation; public claims must be verified; no new analytics provider  
+**Scale/Scope**: Four locales, three storefront currencies, initial Georgia and Germany/EU feed profiles, one sitemap until the 45,000-URL guard requires sharding
+
+## Constitution Check
+
+| Principle | Evidence | Status |
+| --- | --- | --- |
+| Specification before construction | Upgraded spec has five independent journeys, 34 requirements, edge cases, and measurable outcomes | PASS |
+| Product truth and commerce correctness | All search outputs reuse guarded price, inventory, media, publication, and explicit identifier facts; incomplete Merchant facts fail closed | PASS |
+| Customer-first accessible design | Collector’s Index breadcrumbs and collection index are semantic, localized, mobile-first, keyboard-operable, and reviewed at 390/768/1440px | PASS |
+| Security and privacy | XML contains public facts only; private routes use response/document no-index; structured data is safely serialized | PASS |
+| Tested buying journeys | Unit, database, output, crawl, accessibility, visual, performance, and build checks are planned | PASS |
+| Simplicity and incremental delivery | Existing models are extended and one route-set contract feeds every discovery consumer | PASS |
+
+Post-design, all gates remain PASS. No external service or unsupported business claim is added. Merchant activation remains separate and blocked on evidence.
+
+## Architecture and Reuse
+
+### Shared discovery truth
+
+`features/seo/routes.ts` introduces `LocalizedRouteSet`. Query functions load all published translations for one stable identity and build a canonical, real alternates, `x-default`, and indexability decision. Product, collection, journal, service metadata, JSON-LD, sitemap, and feed landing links use the route set instead of rebuilding paths independently.
+
+### Catalog projection
+
+An append-only migration extends products with `brand`, `gtin`, `mpn`, and `identifier_exists`, exposes translation SEO fields through `public_catalog_products`, and adds a published-collection projection. Existing search, price, inventory, and approved media behavior stays authoritative.
+
+### Metadata and structured data
+
+`features/catalog/metadata.ts` becomes the common metadata/JSON-LD boundary. It uses a branded fallback social image, makes fallback pages `noindex,follow`, emits Product only when the eligibility gate and minimum facts pass, and provides WebSite/OnlineStore, Article, and Breadcrumb builders. Optional seller, origin, shipping, returns, and identifiers are omitted unless explicit approved inputs exist.
+
+### Crawlable storefront
+
+A localized `app/[locale]/(store)/collections/page.tsx` lists published collections. `components/storefront/breadcrumbs.tsx` provides semantic navigation to collection, product, journal article, and service pages. Header/footer fallback links point to `/collections`. Search and filtered collection requests remain `noindex,follow`; clean curated collections remain canonical.
+
+### Sitemap and redirects
+
+`app/sitemap.ts` groups translations by stable identity, includes eligible surfaces and approved images, uses source timestamps, and throws a readiness error at 45,000 URLs. Existing `content_redirects` is reused for audited slug redirects. Root navigation uses `permanentRedirect` for HTTP 308.
+
+### Merchant feeds
+
+`features/seo/merchant-feed.ts` defines strict profiles and feed-item validation. `app/feeds/google/[profile]/route.ts` recognizes `ge-en-gel`, `de-de-eur`, `de-en-eur`, and `de-ru-eur`. Every profile initially remains disabled with readiness errors, so endpoints return 404. Builders and XML contracts are tested; activation requires explicit facts and evidence.
+
+### Operations and content
+
+`docs/operations/google-discovery-activation.md` records domain, Search Console, Merchant, Bing, rich-result, sitemap, feed, and monitoring steps. `docs/seo/keyword-page-map.md` is a four-locale planning ledger limited to verified inventory and genuine buyer needs, never generated landing pages.
+
+## Project Structure
+
+```text
+specs/002-google-discovery/{spec,plan,research,data-model,quickstart,tasks}.md
+specs/002-google-discovery/contracts/discovery.md
+app/feeds/google/[profile]/route.ts
+app/[locale]/(store)/collections/page.tsx
+app/{sitemap,robots,opengraph-image}.tsx|ts
+components/storefront/{breadcrumbs,site-header,site-footer}.tsx
+features/catalog/{metadata,queries,schema,types,readiness}.ts
+features/content/{domain,queries}.ts
+features/seo/{routes,content-metadata,merchant-feed}.ts
+supabase/migrations/202608270001_google_discovery.sql
+supabase/tests/database/130_google_discovery.test.sql
+tests/integration/seo/*.test.ts
+tests/unit/storefront/breadcrumbs.test.tsx
+tests/e2e/google-discovery.spec.ts
+docs/operations/google-discovery-activation.md
+docs/seo/keyword-page-map.md
+```
+
+**Structure Decision**: Keep the existing single application and feature folders. Add one focused SEO module and one append-only migration instead of creating a separate service or adding a Merchant SDK.
+
+## Data Flow
+
+1. A public query resolves the requested stable identity and retrieves all published translations.
+2. The route builder selects the requested translation or documented fallback and marks fallback renderings non-indexable.
+3. Metadata, breadcrumbs, JSON-LD, navigation, and sitemap consume the same route set and approved facts.
+4. Currency query input is validated against enabled product prices for the request; canonicals exclude it.
+5. A Merchant request resolves a known profile. Disabled or invalid profiles 404 before item work; enabled profiles validate every candidate and serialize complete items only.
+6. Operational checks retain domain and seller/policy blockers until evidence exists.
+
+## Error, Empty, and Trust States
+
+- Unknown, removed, draft, or non-public records use true not-found paths.
+- Fallback content renders with disclosure but cannot be indexed as a duplicate.
+- Empty collections explain that no approved carpets are available and preserve ordinary navigation.
+- Structured-data gaps omit eligibility instead of breaking pages.
+- Sitemap overflow throws `SITEMAP_SHARDING_REQUIRED` before protocol failure.
+- Feed ambiguity returns 404 or an exclusion code; it never guesses.
+- Breadcrumb names and image alternative text come from localized reviewed copy.
+
+## Verification Strategy
+
+- **Unit**: translated slugs, reciprocal alternates, fallback no-index, clean canonical, SEO precedence, identifiers, safe JSON-LD, XML escaping, feed failure modes.
+- **Database**: projection fields, draft exclusion, route maps, collection reachability warning, identifier constraints, ambiguous feed candidate exclusion.
+- **Generated output**: metadata/social cards, structured data, sitemap grouping/images/threshold, robots/private headers, redirects, feed responses.
+- **Browser**: follow ordinary links from each locale home through collections to products; verify keyboard, focus, landmarks, breadcrumb semantics, wrapping, missing images, and long text at 390/768/1440px.
+- **Commands**: focused Vitest and pgTAP, `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run performance:check`, `npm run security:audit`, and `npm run build`.
+- **External (blocked)**: Rich Results Test, Search Console DNS/property inspection, Merchant validation/free listings, Bing import, and production host checks wait for the final domain and approved business facts.
+
+## Rollout and Rollback
+
+1. Ship additive database projection and pure route/metadata tests.
+2. Ship collection navigation, breadcrumbs, and corrected metadata.
+3. Ship structured data, sitemap hardening, redirects, and disabled feed endpoints.
+4. Run crawl, accessibility, visual, performance, security, and build gates.
+5. Activate external services only after final-domain and business-evidence approval.
+
+The migration is additive except for a compatible public-view replacement. Merchant profiles are disabled by default. Application rollback leaves additive columns unused and deletes no catalog facts.
+
+## Complexity Tracking
+
+No constitution violation requires justification. The plan intentionally avoids a Merchant API client, second application, automatic page generation, and new analytics service.

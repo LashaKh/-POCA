@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { ProductCard } from "@/components/storefront/product-card";
@@ -9,9 +10,19 @@ import { getFallbackServiceContent } from "@/features/content/service-copy";
 import { getEffectiveCurrencyPreference } from "@/features/preferences/currency";
 import { getHomeCatalog } from "@/features/catalog/queries";
 import { getWishlistProductIds } from "@/features/wishlist/queries";
-import { getPublishedContent } from "@/features/content/queries";
+import {
+  getPublishedContent,
+  getPublishedContentRoutes,
+} from "@/features/content/queries";
 import { isAppLocale } from "@/i18n/routing";
-import { buildCatalogMetadata } from "@/features/catalog/metadata";
+import {
+  buildCatalogMetadata,
+  buildOrganizationStructuredData,
+  buildWebsiteStructuredData,
+  getCanonicalOrigin,
+  serializeStructuredData,
+} from "@/features/catalog/metadata";
+import { buildLocalizedRouteSet } from "@/features/seo/routes";
 import { Link } from "@/i18n/navigation";
 import { formatMinorMoney } from "@/lib/money/format";
 
@@ -28,11 +39,25 @@ export async function generateMetadata({
     getTranslations({ locale, namespace: "catalog" }),
     getPublishedContent("homepage-main", locale),
   ]);
+  const routes = homepageContent
+    ? await getPublishedContentRoutes(homepageContent.entryKey)
+    : undefined;
+  const routeSet = routes?.length
+    ? buildLocalizedRouteSet({
+        origin: getCanonicalOrigin(),
+        requestedLocale: locale,
+        resolvedLocale: homepageContent?.resolvedLocale ?? locale,
+        routes,
+        pathFor: (route) => `/${route.locale}`,
+      })
+    : undefined;
   return buildCatalogMetadata({
     locale,
     pathname: "",
+    routeSet,
     title: homepageContent?.translation.title ?? t("homeTitle"),
     description: homepageContent?.translation.summary ?? t("homeBody"),
+    index: !homepageContent?.fallbackDisclosed,
   });
 }
 
@@ -53,6 +78,7 @@ export default async function StorefrontHome({
     getWishlistProductIds(),
     getPublishedContent("homepage-main", locale),
   ]);
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const serviceLinks = (["about", "delivery", "faq"] as const).map((key) => ({
     key,
     ...getFallbackServiceContent(key, locale),
@@ -73,6 +99,16 @@ export default async function StorefrontHome({
 
   return (
     <main className="storefront-home" id="main-content">
+      <script
+        nonce={nonce}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: serializeStructuredData([
+            buildWebsiteStructuredData(locale),
+            buildOrganizationStructuredData(),
+          ]),
+        }}
+      />
       <section className="catalog-hero">
         <div className="catalog-hero-copy">
           <p className="eyebrow">{t("eyebrow")}</p>
@@ -91,7 +127,7 @@ export default async function StorefrontHome({
             {homepageContent?.translation.summary ?? t("homeBody")}
           </p>
           <div className="catalog-hero-actions">
-            <Link className="button-link" href="/search" locale={locale}>
+            <Link className="button-link" href="/collections" locale={locale}>
               <span>{t("homeBrowse")}</span>
               <ArrowUpRightIcon className="action-icon" />
             </Link>
@@ -105,7 +141,9 @@ export default async function StorefrontHome({
           <Link
             className="catalog-hero-record"
             href={`/products/${heroProduct.slug}`}
-            locale={locale}
+            locale={
+              heroProduct.usedFallback ? heroProduct.contentLocale : locale
+            }
           >
             <div className="catalog-hero-media">
               <ResponsiveProductImage

@@ -6,6 +6,10 @@ import { SiteShell } from "@/components/storefront/site-shell";
 import { requireCustomerPage } from "@/features/customer/context";
 import { isAppLocale } from "@/i18n/routing";
 
+export const metadata = {
+  robots: { index: false, follow: false, nocache: true },
+};
+
 export default async function AccountLayout({
   children,
   params,

@@ -11,6 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { getPublishedDeliveryOptions } from "@/features/delivery/queries";
 
 export const dynamic = "force-dynamic";
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function CartPage({
   params,

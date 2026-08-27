@@ -1,0 +1,112 @@
+# Tasks: Google Discovery
+
+<!-- UPGRADED:v1 -->
+
+**Input**: Upgraded `spec.md`, upgraded `plan.md`, `research.md`, `data-model.md`, `quickstart.md`, and `contracts/discovery.md`  
+**Strategy**: Deliver correct organic identity/navigation first, then factual rich data, then closed-by-default Merchant infrastructure, then operational/content hardening.
+
+## Phase 1: Setup and contracts
+
+- [x] T001 Add focused discovery test fixtures and contract helpers in `tests/integration/seo/fixtures.ts`
+- [x] T002 [P] Add localized route-set unit coverage in `tests/integration/seo/localized-routes.test.ts`
+- [x] T003 [P] Extend metadata/structured-data coverage in `tests/integration/seo/catalog-metadata.test.ts`
+- [x] T004 [P] Add Merchant XML/profile coverage in `tests/integration/seo/merchant-feed.test.ts`
+
+## Phase 2: Foundational public truth
+
+- [x] T005 Add identifier fields, SEO projection fields, published collection projection, route-map functions, and collection-path readiness warning in `supabase/migrations/202608270001_google_discovery.sql`
+- [x] T006 [P] Add pgTAP coverage for publication maps, identifiers, draft exclusion, collection reachability, and feed eligibility in `supabase/tests/database/130_google_discovery.test.sql`
+- [x] T007 Regenerate checked database types in `lib/supabase/database.types.ts`
+- [x] T008 Create `LocalizedRouteSet` and clean URL helpers in `features/seo/routes.ts`
+- [x] T009 [W] Wire `LocalizedRouteSet` into catalog/content queries in `features/catalog/queries.ts` and `features/content/queries.ts`
+- [x] T010 Extend product schemas and public types with SEO, condition, eligibility, identifiers, timestamps, images, and route sets in `features/catalog/schema.ts` and `features/catalog/types.ts`
+- [x] T011 [W] Wire the extended public product projection into all mappings in `features/catalog/queries.ts`
+- [x] T012 Add validated request-currency override behavior in `features/preferences/currency.ts`
+- [x] T013 [W] Wire request currency into product page loading while preserving clean canonicals in `app/[locale]/(store)/products/[slug]/page.tsx`
+
+## Phase 3: Correct localized discovery (US1)
+
+**Independent test**: Representative localized pages expose clean self-canonicals, only real reciprocal alternatives, SEO-field precedence, safe fallback no-index, and permanent root redirect.
+
+- [x] T014 [US1] Refactor shared metadata, social fallback, robot decisions, and safe JSON-LD serialization in `features/catalog/metadata.ts`
+- [x] T015 [W] [US1] Wire route sets and SEO fields into product metadata in `app/[locale]/(store)/products/[slug]/page.tsx`
+- [x] T016 [W] [US1] Wire real collection alternates and clean filtered canonicals into `app/[locale]/(store)/collections/[slug]/page.tsx`
+- [x] T017 [W] [US1] Wire real content alternates and fallback no-index into `features/seo/content-metadata.ts` and `app/[locale]/(store)/journal/[slug]/page.tsx`
+- [x] T018 [P] [US1] Add localized metadata for journal/search/contact/index surfaces in `app/[locale]/(store)/journal/page.tsx`, `app/[locale]/(store)/search/page.tsx`, and service metadata helpers
+- [x] T019 [P] [US1] Add one truthful generated brand social fallback in `app/opengraph-image.tsx`
+- [x] T020 [US1] Change the bare root to a permanent Georgian redirect in `app/page.tsx` and `proxy.ts`
+- [x] T021 [US1] Harden robot exclusions in `app/robots.ts`, `public/_headers`, and private route layouts/pages
+- [x] T022 [US1] Record audited product/collection slug redirects in `supabase/migrations/202608270001_google_discovery.sql` and resolve them in `proxy.ts`
+
+## Phase 4: Crawlable Collector’s Index (US2)
+
+**Independent test**: A crawler and keyboard user can traverse every locale from home to collection index to collection to product with visible semantic breadcrumbs.
+
+- [x] T023 [P] [US2] Add localized collection-index and breadcrumb messages in `messages/ka.json`, `messages/en.json`, `messages/de.json`, and `messages/ru.json`
+- [x] T024 [US2] Create semantic Collector’s Index breadcrumbs in `components/storefront/breadcrumbs.tsx`
+- [x] T025 [W] [US2] Wire breadcrumbs into collection, product, journal article, and service consumers under `app/[locale]/(store)`
+- [x] T026 [US2] Create the localized published collection index in `app/[locale]/(store)/collections/page.tsx`
+- [x] T027 [W] [US2] Wire `/collections` into header/footer fallback navigation in `components/storefront/site-header.tsx` and `components/storefront/site-footer.tsx`
+- [x] T028 [US2] Add responsive Collector’s Index breadcrumb/collection styles in `app/globals.css`
+- [x] T029 [P] [US2] Add breadcrumb component tests in `tests/unit/storefront/breadcrumbs.test.tsx`
+
+## Phase 5: Factual rich discovery and sitemap (US3)
+
+**Independent test**: Eligible pages emit complete factual schemas and grouped sitemap entries; ineligible pages omit Product claims; all sitemap URLs are clean/indexable and below the guard.
+
+- [x] T030 [US3] Expand gated Product/Offer, WebSite/OnlineStore, Article, and Breadcrumb builders in `features/catalog/metadata.ts` and `features/seo/content-metadata.ts`
+- [x] T031 [W] [US3] Wire eligible schemas into home, product, collection, journal, and service pages under `app/[locale]/(store)`
+- [x] T032 [US3] Rebuild grouped localized sitemap and image entries with source timestamps and 45,000-entry guard in `app/sitemap.ts`
+- [x] T033 [P] [US3] Add generated sitemap/output coverage in `tests/integration/seo/sitemap.test.ts`
+
+## Phase 6: Closed-by-default Merchant feeds (US4)
+
+**Independent test**: Known incomplete profiles and unknown profiles 404; pure builders reject ambiguous/incomplete items and serialize valid XML safely with matching currency landing URLs.
+
+- [x] T034 [US4] Create strict feed profiles, readiness validation, item contract, and XML serialization in `features/seo/merchant-feed.ts`
+- [x] T035 [W] [US4] Wire profiles into public XML routing in `app/feeds/google/[profile]/route.ts`
+- [x] T036 [US4] Add feed/profile environment and operational readiness reporting in `lib/env/schema.ts` and `features/operations/readiness.ts`
+
+## Phase 7: Useful content and activation operations (US5)
+
+**Independent test**: The owner has a four-locale intent ledger and evidence-led activation/runbook with all unavailable external prerequisites visibly blocked.
+
+- [x] T037 [P] [US5] Create the verified-inventory keyword-to-page ledger in `docs/seo/keyword-page-map.md`
+- [x] T038 [P] [US5] Create domain/Search Console/Merchant/Bing/monitoring activation runbook in `docs/operations/google-discovery-activation.md`
+- [x] T039 [US5] Link discovery activation evidence from `docs/operations/external-activation-register.md` and `docs/operations/owner-manual.md`
+
+## Phase 8: Cross-cutting verification and polish
+
+- [x] T040 Add crawl, private-header, redirect, navigation, and feed response checks in `tests/e2e/google-discovery.spec.ts`
+- [x] T041 Run focused Vitest, pgTAP, database types, format, lint, typecheck, security, performance, and production build gates
+- [x] T042 Run accessibility and visual review in all locales at 390px, 768px, and 1440px and record results in `specs/002-google-discovery/quickstart.md`
+- [ ] T043 Validate representative production-domain pages in Rich Results Test, Search Console, Merchant Center, and Bing after external prerequisites exist; record evidence in `docs/operations/google-discovery-activation.md`
+
+## Dependencies
+
+- T005–T013 are foundational and block page integration.
+- US1 (T014–T022) establishes correct identity and indexability before US2–US4.
+- US2 and US3 may proceed in parallel after route/query wiring, but T032 depends on the published collection projection.
+- US4 pure validation can proceed after types/routes; activation stays independent and closed.
+- US5 documentation can proceed in parallel, but T039 must preserve current owner changes.
+- T043 is intentionally blocked until final domain and business evidence exist; all organic code can complete before it.
+
+## Parallel opportunities
+
+- T002–T004; T006; T018–T019; T023 and T029; T033; T037–T038 operate in separate files after their prerequisites.
+- Database, pure TypeScript contracts, and content/runbook work can be verified independently.
+
+## Wiring audit
+
+Every new helper or component has an explicit `[W]` consumer task: route sets T009, extended mappings T011, currency T013, metadata T015–T017, breadcrumbs T025, collection index navigation T027, structured data T031, and Merchant profiles T035. Expected orphan count: 0.
+
+## Hardening coverage
+
+- **Requirement traceability**: FR-001–008 → T005–T022; FR-009–015 → T023–T033; FR-016–021 → T030–T033; FR-022–028 → T034–T036; FR-029–034 → T037–T043.
+- **State completeness**: populated, empty, missing-image, fallback, unavailable, filtered, invalid, overflow, disabled-profile, and ambiguous-seller paths appear in implementation or verification tasks.
+- **UI completeness**: component creation is followed by route wiring, responsive styling, component tests, browser accessibility, and three-width visual review.
+- **Production boundary**: organic implementation tasks can complete; T043 remains a named external-evidence task instead of allowing placeholder-domain activation.
+
+## Implementation strategy
+
+The MVP is US1 plus the collection index/navigation portion of US2. It makes Google and customers reach the correct public language page through ordinary links. Rich data, sitemap expansion, and disabled feed infrastructure then layer on without changing that core route truth.
