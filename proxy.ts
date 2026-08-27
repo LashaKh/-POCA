@@ -97,7 +97,7 @@ export async function proxy(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID());
   const publicEnvironment = getPublicEnvironment();
   const securityOptions = {
-    production: process.env.DEPLOY_ENV === "production",
+    production: process.env.NODE_ENV === "production",
     supabaseOrigin: publicEnvironment.NEXT_PUBLIC_SUPABASE_URL,
     posthogOrigin: process.env.NEXT_PUBLIC_POSTHOG_ORIGIN,
     nonce,

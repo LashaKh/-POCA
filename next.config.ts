@@ -3,7 +3,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 import { getSecurityHeaders } from "./lib/security/headers";
 
-const production = process.env.DEPLOY_ENV === "production";
+const production = process.env.NODE_ENV === "production";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
